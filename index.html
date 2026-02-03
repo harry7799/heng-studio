@@ -1,0 +1,109 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Harry Heng | 謝典恆 Photography Studio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@300;400;500&family=Noto+Sans+TC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+      /* 僅在啟用自訂游標時才隱藏原生游標，避免卡頓或小螢幕無游標 */
+      @media (pointer: fine) {
+        body.cursor-custom,
+        body.cursor-custom a,
+        body.cursor-custom button,
+        body.cursor-custom [role="button"],
+        body.cursor-custom input,
+        body.cursor-custom textarea,
+        body.cursor-custom select {
+          cursor: none !important;
+        }
+      }
+      
+      body {
+        background-color: #F5F5F3;
+        color: #1A1A1A;
+        margin: 0;
+        overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
+        /* Base: Inter for body, CJK fallback Noto Sans TC */
+        font-family: 'Inter', 'Noto Sans TC', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      }
+      .font-serif { font-family: 'Playfair Display', 'Noto Sans TC', Georgia, serif; }
+      .font-display { font-family: 'Cinzel', 'Playfair Display', 'Noto Sans TC', serif; }
+      .font-sans { font-family: 'Inter', 'Noto Sans TC', system-ui, sans-serif; }
+      .font-mono { font-family: 'JetBrains Mono', 'Consolas', monospace; }
+      
+      ::-webkit-scrollbar {
+        width: 4px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #F5F5F3;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #1A1A1A;
+      }
+
+      .no-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+
+      /* 游標核心樣式 */
+      .cursor-dot {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 10px;
+        height: 10px;
+        background: #ffffff;
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 10001;
+        transform: translate(-50%, -50%);
+        mix-blend-mode: difference;
+      }
+      .cursor-ring {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 56px;
+        height: 56px;
+        border: 1.5px solid rgba(255, 255, 255, 0.65);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 10000;
+        transform: translate(-50%, -50%);
+        mix-blend-mode: difference;
+      }
+      .cursor-ring.hovering {
+        /* 尺寸與顏色由 Framer Motion 動畫控制 */
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react/": "https://esm.sh/react@^19.2.4/",
+    "react": "https://esm.sh/react@^19.2.4",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
+    "lucide-react": "https://esm.sh/lucide-react@^0.563.0",
+    "framer-motion": "https://esm.sh/framer-motion@^12.29.2",
+    "three": "https://esm.sh/three@0.160.0",
+    "@react-three/fiber": "https://esm.sh/@react-three/fiber@8.15.12?external=react,react-dom,three",
+    "@react-three/drei": "https://esm.sh/@react-three/drei@9.92.7?external=react,react-dom,three,@react-three/fiber"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body>
+    <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>

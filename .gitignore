@@ -1,0 +1,38 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Env files
+.env
+.env.*
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+Thumbs.db
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Local photo staging/backup folders (not needed for deploy)
+public/images/downloaded_photos/
+public/images/downloaded_photos_backup_*/
+public/images/IG portfolio/
+
+# API runtime data (generated)
+server/uploads/
+server/data/projects.json

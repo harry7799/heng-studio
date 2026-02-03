@@ -1,0 +1,22 @@
+[
+  {
+    "category": "bestie",
+    "name": "01.jpg",
+    "url": "/images/intimacy/bestie/01.jpg"
+  },
+  {
+    "category": "family",
+    "name": "02.jpg",
+    "url": "/images/intimacy/family/02.jpg"
+  },
+  {
+    "category": "pet",
+    "name": "03.jpg",
+    "url": "/images/intimacy/pet/03.jpg"
+  },
+  {
+    "category": "pet",
+    "name": "04.jpg",
+    "url": "/images/intimacy/pet/04.jpg"
+  }
+]

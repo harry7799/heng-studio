@@ -1,0 +1,106 @@
+import fs from 'node:fs/promises';
+import path from 'node:path';
+
+const ROOT = path.resolve(process.cwd());
+const PUBLIC_DIR = path.join(ROOT, 'public');
+
+function isImageFile(name) {
+  return /\.(jpe?g|png|webp|avif)$/i.test(name);
+}
+
+function parseLeadingNumber(name) {
+  const m = name.match(/^(\d+)\.(jpe?g|png|webp|avif)$/i);
+  if (!m) return null;
+  const digits = m[1];
+  const number = Number.parseInt(digits, 10);
+  if (!Number.isFinite(number)) return null;
+  return { number, digitsLen: digits.length };
+}
+
+async function listDirSafe(dir) {
+  try {
+    const entries = await fs.readdir(dir, { withFileTypes: true });
+    return entries;
+  } catch {
+    return [];
+  }
+}
+
+async function generateGalleryManifest() {
+  const galleryDir = path.join(PUBLIC_DIR, 'images', 'gallery');
+  const entries = await listDirSafe(galleryDir);
+
+  const candidates = entries
+    .filter((e) => e.isFile())
+    .map((e) => e.name)
+    .filter(isImageFile);
+
+  // Deduplicate by numeric prefix (prefer 3-digit canonical names like 010.jpg over 0010.jpg)
+  const byNumber = new Map();
+  for (const name of candidates) {
+    const parsed = parseLeadingNumber(name);
+    if (!parsed) continue;
+
+    const url = `/images/gallery/${encodeURIComponent(name)}`;
+    const current = byNumber.get(parsed.number);
+    const next = { name, url, number: parsed.number, digitsLen: parsed.digitsLen };
+
+    if (!current) {
+      byNumber.set(parsed.number, next);
+      continue;
+    }
+
+    const currentScore = current.digitsLen === 3 ? 0 : 1;
+    const nextScore = next.digitsLen === 3 ? 0 : 1;
+    if (nextScore < currentScore) byNumber.set(parsed.number, next);
+  }
+
+  const items = Array.from(byNumber.values())
+    .sort((a, b) => a.number - b.number)
+    .map(({ digitsLen, ...rest }) => rest);
+
+  const outPath = path.join(PUBLIC_DIR, 'gallery.json');
+  await fs.writeFile(outPath, JSON.stringify(items, null, 2) + '\n', 'utf8');
+  return { outPath, count: items.length };
+}
+
+async function generateIntimacyManifest() {
+  const intimacyRoot = path.join(PUBLIC_DIR, 'images', 'intimacy');
+  const categories = ['bestie', 'family', 'pet'];
+
+  const items = [];
+  for (const category of categories) {
+    const dir = path.join(intimacyRoot, category);
+    const entries = await listDirSafe(dir);
+    const files = entries
+      .filter((e) => e.isFile())
+      .map((e) => e.name)
+      .filter(isImageFile)
+      .sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }));
+
+    for (const name of files) {
+      items.push({
+        category,
+        name,
+        url: `/images/intimacy/${category}/${encodeURIComponent(name)}`
+      });
+    }
+  }
+
+  const outPath = path.join(PUBLIC_DIR, 'intimacy.json');
+  await fs.writeFile(outPath, JSON.stringify(items, null, 2) + '\n', 'utf8');
+  return { outPath, count: items.length };
+}
+
+async function main() {
+  const gallery = await generateGalleryManifest();
+  const intimacy = await generateIntimacyManifest();
+
+  console.log(`[manifests] wrote ${path.relative(ROOT, gallery.outPath)} (${gallery.count} items)`);
+  console.log(`[manifests] wrote ${path.relative(ROOT, intimacy.outPath)} (${intimacy.count} items)`);
+}
+
+main().catch((err) => {
+  console.error('[manifests] failed', err);
+  process.exit(1);
+});

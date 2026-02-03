@@ -1,0 +1,43 @@
+{
+  "name": "elysian-lens---photographer-&-stylist-portfolio",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently -n api,web -c magenta,cyan \"npm run dev:api\" \"npm run dev:web\"",
+    "dev:web": "vite",
+    "dev:api": "tsx watch server/index.ts",
+    "gen:manifests": "node scripts/generate-public-manifests.mjs",
+    "photos:finish": "node scripts/finish-downloaded-photos.mjs",
+    "photos:normalize-map": "node scripts/normalize-rename-map-after-shift.mjs",
+    "photos:ig-to-gallery": "node scripts/ig-portfolio-to-gallery.mjs",
+    "build": "npm run gen:manifests && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.5.0",
+    "@types/multer": "^2.0.0",
+    "@types/three": "^0.182.0",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "framer-motion": "^12.29.2",
+    "lucide-react": "^0.563.0",
+    "multer": "^2.0.2",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "three": "^0.182.0",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.22",
+    "@types/node": "^22.14.0",
+    "@vitejs/plugin-react": "^5.0.0",
+    "concurrently": "^9.1.2",
+    "sharp": "^0.34.5",
+    "tsx": "^4.19.2",
+    "typescript": "~5.8.2",
+    "vite": "^6.2.0"
+  }
+}
