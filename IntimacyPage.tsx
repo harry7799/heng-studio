@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo } from 'react';
+import React, { useState, useRef, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform, useSpring } from 'framer-motion';
 import { ArrowLeft, ArrowUpRight, Heart, Users, Dog } from 'lucide-react';
 
@@ -17,6 +17,22 @@ const IntimacyPage = () => {
   const [activeFilter, setActiveFilter] = useState<string>('all');
   const containerRef = useRef<HTMLDivElement>(null);
   
+  // Dynamic SEO title
+  useEffect(() => {
+    const originalTitle = document.title;
+    document.title = '親密寫真 Intimacy | Harry Heng Studio';
+    return () => { document.title = originalTitle; };
+  }, []);
+
+  // Scroll lock when lightbox is open
+  useEffect(() => {
+    if (selectedImage) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => { document.body.style.overflow = originalOverflow; };
+    }
+  }, [selectedImage]);
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start end", "end start"]

@@ -93,25 +93,114 @@ const StaggerText = ({ text, className = "", delay = 0 }: { text: string; classN
   );
 };
 
+// --- Progressive Image with Blur Placeholder ---
+const ProgressiveImage = ({ 
+  src, 
+  alt, 
+  className = "", 
+  imgClassName = "",
+  children 
+}: { 
+  src: string; 
+  alt: string; 
+  className?: string; 
+  imgClassName?: string;
+  children?: React.ReactNode;
+}) => {
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [hasError, setHasError] = useState(false);
+  
+  return (
+    <div className={`relative overflow-hidden bg-slate-200 ${className}`}>
+      {/* Blur placeholder skeleton */}
+      <motion.div
+        className="absolute inset-0 bg-gradient-to-br from-slate-100 via-slate-200 to-slate-100"
+        initial={{ opacity: 1 }}
+        animate={{ opacity: isLoaded ? 0 : 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        {/* Shimmer effect */}
+        <motion.div
+          className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+          animate={{ x: ['-100%', '100%'] }}
+          transition={{ 
+            duration: 1.5, 
+            repeat: Infinity, 
+            repeatDelay: 0.5,
+            ease: "easeInOut" 
+          }}
+        />
+      </motion.div>
+      
+      {/* Actual image */}
+      <motion.img
+        src={src}
+        alt={alt}
+        className={`w-full h-full object-cover ${imgClassName}`}
+        initial={{ opacity: 0, filter: 'blur(10px)', scale: 1.05 }}
+        animate={{ 
+          opacity: isLoaded ? 1 : 0, 
+          filter: isLoaded ? 'blur(0px)' : 'blur(10px)',
+          scale: isLoaded ? 1 : 1.05
+        }}
+        transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+        onLoad={() => setIsLoaded(true)}
+        onError={() => setHasError(true)}
+        loading="lazy"
+      />
+      
+      {/* Error state */}
+      {hasError && (
+        <div className="absolute inset-0 flex items-center justify-center bg-slate-100 text-slate-400">
+          <Camera size={32} />
+        </div>
+      )}
+      
+      {children}
+    </div>
+  );
+};
+
 // --- Image with Distortion Hover ---
 const DistortionImage = ({ src, alt, className = "" }: { src: string; alt: string; className?: string }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
   
   return (
     <motion.div
-      className={`relative overflow-hidden ${className}`}
+      className={`relative overflow-hidden bg-slate-200 ${className}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
+      {/* Blur placeholder */}
+      <motion.div
+        className="absolute inset-0 bg-gradient-to-br from-slate-100 via-slate-200 to-slate-100 z-[1]"
+        initial={{ opacity: 1 }}
+        animate={{ opacity: isLoaded ? 0 : 1 }}
+        transition={{ duration: 0.4 }}
+        style={{ pointerEvents: 'none' }}
+      >
+        <motion.div
+          className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+          animate={{ x: ['-100%', '100%'] }}
+          transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 0.5, ease: "easeInOut" }}
+        />
+      </motion.div>
+      
       <motion.img
         src={src}
         alt={alt}
         className="w-full h-full object-cover"
+        initial={{ filter: 'blur(10px)' }}
         animate={{
           scale: isHovered ? 1.1 : 1,
-          filter: isHovered ? "saturate(1.2) contrast(1.1)" : "saturate(1) contrast(1)"
+          filter: isLoaded 
+            ? (isHovered ? "saturate(1.2) contrast(1.1) blur(0px)" : "saturate(1) contrast(1) blur(0px)")
+            : "saturate(1) contrast(1) blur(10px)"
         }}
         transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+        onLoad={() => setIsLoaded(true)}
+        loading="lazy"
       />
       <motion.div
         className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"
@@ -298,16 +387,40 @@ const CustomCursor = () => {
 // --- Parallax Image ---
 const ParallaxImage = ({ src, alt, className = "", intensity = 0.1 }: { src: string; alt: string; className?: string; intensity?: number }) => {
   const ref = useRef(null);
+  const [isLoaded, setIsLoaded] = useState(false);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
   const y = useTransform(scrollYProgress, [0, 1], [`-${intensity * 100}%`, `${intensity * 100}%`]);
 
   return (
-    <div ref={ref} className={`relative overflow-hidden ${className}`}>
+    <div ref={ref} className={`relative overflow-hidden bg-slate-200 ${className}`}>
+      {/* Blur placeholder */}
+      <motion.div
+        className="absolute inset-0 bg-gradient-to-br from-slate-100 via-slate-200 to-slate-100 z-[1]"
+        initial={{ opacity: 1 }}
+        animate={{ opacity: isLoaded ? 0 : 1 }}
+        transition={{ duration: 0.5 }}
+        style={{ pointerEvents: 'none' }}
+      >
+        <motion.div
+          className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+          animate={{ x: ['-100%', '100%'] }}
+          transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 0.5, ease: "easeInOut" }}
+        />
+      </motion.div>
+      
       <motion.img 
         style={{ y }} 
         src={src} 
         alt={alt} 
-        className="absolute inset-0 w-full h-[120%] object-cover" 
+        className="absolute inset-0 w-full h-[120%] object-cover"
+        initial={{ filter: 'blur(15px)', scale: 1.1 }}
+        animate={{ 
+          filter: isLoaded ? 'blur(0px)' : 'blur(15px)',
+          scale: isLoaded ? 1 : 1.1
+        }}
+        transition={{ duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
+        onLoad={() => setIsLoaded(true)}
+        loading="lazy"
       />
     </div>
   );
@@ -504,6 +617,50 @@ const InteractivePortfolioList = ({
 
 // --- Project Detail ---
 const ProjectCaseStudy = ({ project, onBack }: { project: Project; onBack: () => void }) => {
+  // Scroll lock: prevent body scroll when modal is open
+  useEffect(() => {
+    const originalOverflow = document.body.style.overflow;
+    const originalPaddingRight = document.body.style.paddingRight;
+    
+    // Calculate scrollbar width to prevent layout shift
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+    
+    document.body.style.overflow = 'hidden';
+    if (scrollbarWidth > 0) {
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
+    }
+    
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      document.body.style.paddingRight = originalPaddingRight;
+    };
+  }, []);
+
+  // History API: allow back button to close modal
+  useEffect(() => {
+    // Push a state when modal opens
+    window.history.pushState({ modal: 'project', projectId: project.id }, '');
+    
+    const handlePopState = (e: PopStateEvent) => {
+      // When user presses back, close the modal
+      onBack();
+    };
+    
+    window.addEventListener('popstate', handlePopState);
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [project.id, onBack]);
+
+  // Dynamic SEO title
+  useEffect(() => {
+    const originalTitle = document.title;
+    document.title = `${project.title} | Harry Heng Studio`;
+    return () => {
+      document.title = originalTitle;
+    };
+  }, [project.title]);
+
   return (
     <motion.div 
       initial={{ y: "100%" }}
@@ -1386,7 +1543,9 @@ export default function App() {
                 transition={{ delay: 0.3 }}
                 viewport={{ once: true }}
               >
-                 <div className="font-mono text-[10px] uppercase tracking-[0.6em] text-white/70">
+                 {/* Subtle backdrop for readability on light backgrounds */}
+                 <div className="absolute -inset-6 bg-gradient-to-br from-black/20 via-transparent to-transparent rounded-2xl blur-xl -z-10" />
+                 <div className="font-mono text-[10px] uppercase tracking-[0.6em] text-white/70" style={{ textShadow: '0 2px 10px rgba(0,0,0,0.3)' }}>
                    About Portrait
                  </div>
                  <div className="mt-4">
@@ -1396,7 +1555,7 @@ export default function App() {
                        color: 'transparent',
                        WebkitTextStroke: '1px rgba(255,255,255,0.85)',
                        letterSpacing: '0.06em',
-                       textShadow: '0 0 40px rgba(255,255,255,0.08)'
+                       textShadow: '0 0 40px rgba(255,255,255,0.08), 0 4px 20px rgba(0,0,0,0.2)'
                      }}
                    >
                      <div className="text-[12vw] sm:text-[9vw] lg:text-6xl">Fashion</div>
