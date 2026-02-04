@@ -336,7 +336,7 @@ const IntimacyPage = () => {
 
 const GalleryImage = ({ src, index, onClick }: { src: string; index: number; onClick: () => void }) => {
   const [isHovered, setIsHovered] = useState(false);
-  const aspects = ['aspect-[3/4]', 'aspect-square'];
+  const aspects = ['aspect-[2/3]', 'aspect-[1/2]'];
   const aspect = aspects[index % 2];
 
   return (

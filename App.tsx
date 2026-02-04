@@ -795,7 +795,7 @@ const ProjectCaseStudy = ({
              {(galleryStrip.length ? galleryStrip : [heroSrc, detailSrc, heroSrc]).map((src, i) => (
                 <motion.div 
                   key={i} 
-                  className="aspect-[3/4] overflow-hidden rounded-2xl"
+                  className="aspect-[1/2] overflow-hidden rounded-2xl"
                   initial={{ opacity: 0, y: 50 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: i * 0.1 }}
@@ -1020,15 +1020,24 @@ const InstagramGalleryWall = () => {
     }
   };
 
-  const GalleryImage = ({ item, index }: { item: { src: string; number: number; size: string }; index: number }) => {
+  const GalleryImage = ({ item, index, column }: { item: { src: string; number: number; size: string }; index: number; column?: number }) => {
     const [isHovered, setIsHovered] = useState(false);
     const [isBroken, setIsBroken] = useState(false);
 
     if (isBroken) return null;
+
+    // For column 3 (rightmost), use random aspect ratios
+    const getAspectForImage = (size: string, idx: number) => {
+      if (column === 3) {
+        const randomAspects = ['aspect-[3/4]', 'aspect-[4/5]', 'aspect-[2/3]', 'aspect-[3/5]', 'aspect-[5/7]'];
+        return randomAspects[idx % randomAspects.length];
+      }
+      return getAspectClass(size);
+    };
     
     return (
       <motion.div
-        className={`relative overflow-hidden ${getAspectClass(item.size)} group cursor-pointer`}
+        className={`relative overflow-hidden ${getAspectForImage(item.size, index)} group cursor-pointer`}
         initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, delay: index * 0.1, ease: [0.25, 0.46, 0.45, 0.94] }}
@@ -1121,7 +1130,7 @@ const InstagramGalleryWall = () => {
             style={{ y: smoothY3 }}
           >
             {col3.map((item, i) => (
-              <GalleryImage key={item.src} item={item} index={i + col1.length + col2.length} />
+              <GalleryImage key={item.src} item={item} index={i + col1.length + col2.length} column={3} />
             ))}
           </motion.div>
         </div>
