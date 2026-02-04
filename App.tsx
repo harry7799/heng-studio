@@ -484,14 +484,23 @@ const InteractivePortfolioList = ({
   projects,
   onSelect,
   archiveStartYear,
-  archiveEndYear
+  archiveEndYear,
+  getCoverUrl
 }: {
   projects: Project[];
   onSelect: (p: Project) => void;
   archiveStartYear: number;
   archiveEndYear: number;
+  getCoverUrl?: (p: Project) => string;
 }) => {
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
+  const [previewIdx, setPreviewIdx] = useState<number | null>(() => (projects.length ? 0 : null));
+
+  useEffect(() => {
+    if (previewIdx === null && projects.length) setPreviewIdx(0);
+  }, [previewIdx, projects.length]);
+
+  const resolveCoverUrl = (p: Project) => (getCoverUrl ? getCoverUrl(p) : p.imageUrl);
 
   return (
     <section id="work" className="relative bg-[#F5F5F3]">
@@ -521,7 +530,10 @@ const InteractivePortfolioList = ({
               <motion.div 
                 key={project.id}
                 className="group relative border-b border-black/5 py-6 flex items-center justify-between cursor-pointer"
-                onMouseEnter={() => setHoveredIdx(idx)}
+                onMouseEnter={() => {
+                  setHoveredIdx(idx);
+                  setPreviewIdx(idx);
+                }}
                 onMouseLeave={() => setHoveredIdx(null)}
                 onClick={() => onSelect(project)}
                 data-cursor="查看"
@@ -563,36 +575,41 @@ const InteractivePortfolioList = ({
         <div className="hidden lg:block lg:col-span-5 sticky top-0 h-screen">
           <div className="h-full p-8 flex items-center justify-center bg-[#EBEBEA]">
             <AnimatePresence mode="wait">
-              {hoveredIdx !== null && projects[hoveredIdx] ? (
+              {(() => {
+                const idx = hoveredIdx ?? previewIdx;
+                const p = idx !== null ? projects[idx] : null;
+                if (!p) return null;
+                return (
                 <motion.div
-                  key={projects[hoveredIdx].id}
+                  key={p.id}
                   initial={{ opacity: 0, scale: 0.96 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.96 }}
                   transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
-                  className="relative w-full max-w-md aspect-[3/4] overflow-hidden"
+                  className="relative w-full max-w-lg aspect-[2/3] overflow-hidden"
                 >
                   <img 
-                    src={projects[hoveredIdx].imageUrl} 
-                    alt={projects[hoveredIdx].title}
+                    src={resolveCoverUrl(p)} 
+                    alt={p.title}
                     className="w-full h-full object-cover" 
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
                   <div className="absolute bottom-6 left-6 right-6">
                     <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-white/70 block mb-2">
-                      {projects[hoveredIdx].category}
+                      {p.category}
                     </span>
                     <h4 className="font-sans font-bold text-2xl text-white tracking-tight">
-                      {projects[hoveredIdx].title}
+                      {p.title}
                     </h4>
-                    {projects[hoveredIdx].metadata?.date && (
+                    {p.metadata?.date && (
                       <span className="font-mono text-[10px] text-white/50 mt-2 block">
-                        {projects[hoveredIdx].metadata.date}
+                        {p.metadata.date}
                       </span>
                     )}
                   </div>
                 </motion.div>
-              ) : (
+                );
+              })() ?? (
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -616,7 +633,17 @@ const InteractivePortfolioList = ({
 };
 
 // --- Project Detail ---
-const ProjectCaseStudy = ({ project, onBack }: { project: Project; onBack: () => void }) => {
+const ProjectCaseStudy = ({
+  project,
+  images,
+  coverUrl,
+  onBack
+}: {
+  project: Project;
+  images?: string[];
+  coverUrl?: string;
+  onBack: () => void;
+}) => {
   // Scroll lock: prevent body scroll when modal is open
   useEffect(() => {
     const originalOverflow = document.body.style.overflow;
@@ -661,6 +688,15 @@ const ProjectCaseStudy = ({ project, onBack }: { project: Project; onBack: () =>
     };
   }, [project.title]);
 
+  const resolvedImages = useMemo(() => {
+    const list = Array.isArray(images) ? images.filter((x) => typeof x === 'string' && x.length > 0) : [];
+    return list.length ? list : [project.imageUrl];
+  }, [images, project.imageUrl]);
+
+  const heroSrc = coverUrl || resolvedImages[0] || project.imageUrl;
+  const detailSrc = resolvedImages[1] || heroSrc;
+  const galleryStrip = resolvedImages.slice(2, 5);
+
   return (
     <motion.div 
       initial={{ y: "100%" }}
@@ -675,7 +711,7 @@ const ProjectCaseStudy = ({ project, onBack }: { project: Project; onBack: () =>
             <ArrowLeft size={14} /> 關閉
           </button>
         </MagneticButton>
-        <span className="font-sans font-black text-sm uppercase">作品 0{project.id}</span>
+        <span className="font-sans font-black text-sm uppercase">作品 {String(project.id).padStart(2, '0')}</span>
       </nav>
 
       <div className="max-w-7xl mx-auto px-8 py-32">
@@ -717,7 +753,7 @@ const ProjectCaseStudy = ({ project, onBack }: { project: Project; onBack: () =>
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
-            <ParallaxImage src={project.imageUrl} alt="Hero" className="w-full aspect-video rounded-3xl" />
+            <ParallaxImage src={heroSrc} alt="Hero" className="w-full aspect-video rounded-3xl" />
           </motion.div>
           
           <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
@@ -744,12 +780,12 @@ const ProjectCaseStudy = ({ project, onBack }: { project: Project; onBack: () =>
                transition={{ duration: 0.6, delay: 0.2 }}
                viewport={{ once: true }}
              >
-                <DistortionImage src={project.imageUrl} alt="Detail" className="w-full h-full grayscale hover:grayscale-0 transition-all duration-1000" />
+               <DistortionImage src={detailSrc} alt="Detail" className="w-full h-full grayscale hover:grayscale-0 transition-all duration-1000" />
              </motion.div>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-             {[...Array(3)].map((_, i) => (
+             {(galleryStrip.length ? galleryStrip : [heroSrc, detailSrc, heroSrc]).map((src, i) => (
                 <motion.div 
                   key={i} 
                   className="aspect-[3/4] overflow-hidden rounded-2xl"
@@ -758,7 +794,7 @@ const ProjectCaseStudy = ({ project, onBack }: { project: Project; onBack: () =>
                   transition={{ duration: 0.5, delay: i * 0.1 }}
                   viewport={{ once: true }}
                 >
-                   <DistortionImage src={project.imageUrl} alt={`Gallery ${i + 1}`} className="w-full h-full" />
+                 <DistortionImage src={src} alt={`Gallery ${i + 1}`} className="w-full h-full" />
                 </motion.div>
              ))}
           </div>
@@ -887,9 +923,11 @@ const InstagramGalleryWall = () => {
   });
 
   // Different parallax speeds for columns
-  const y1 = useTransform(scrollYProgress, [0, 1], [0, -80]);
-  const y2 = useTransform(scrollYProgress, [0, 1], [0, -40]);
-  const y3 = useTransform(scrollYProgress, [0, 1], [0, -120]);
+  // Keep offsets subtle; large negative offsets create visible blank space at the bottom
+  // because transforms don't affect layout height.
+  const y1 = useTransform(scrollYProgress, [0, 1], [24, -24]);
+  const y2 = useTransform(scrollYProgress, [0, 1], [12, -12]);
+  const y3 = useTransform(scrollYProgress, [0, 1], [36, -36]);
 
   const smoothY1 = useSpring(y1, { stiffness: 100, damping: 30 });
   const smoothY2 = useSpring(y2, { stiffness: 100, damping: 30 });
@@ -969,7 +1007,8 @@ const InstagramGalleryWall = () => {
   const getAspectClass = (size: string) => {
     switch (size) {
       case 'tall': return 'aspect-[3/4]';
-      case 'wide': return 'aspect-[4/3]';
+      // slightly taller so it doesn't feel "too short"
+      case 'wide': return 'aspect-[5/4]';
       default: return 'aspect-square';
     }
   };
@@ -1307,6 +1346,7 @@ export default function App() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const { content, projects: contentProjects } = useContent();
   const projects = contentProjects?.length ? contentProjects : PROJECTS;
+  const [projectMediaById, setProjectMediaById] = useState<Record<string, { coverUrl?: string; images: string[] }>>({});
   const currentYear = useMemo(() => new Date().getFullYear(), []);
   const showLabels = useMemo(() => {
     try {
@@ -1315,6 +1355,43 @@ export default function App() {
       return false;
     }
   }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const r = await fetch('/projects.json', { cache: 'no-cache' });
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        const data = await r.json();
+        if (cancelled) return;
+
+        const record: Record<string, { coverUrl?: string; images: string[] }> = {};
+        if (Array.isArray(data)) {
+          for (const it of data) {
+            if (!it || typeof it.id !== 'string') continue;
+            const images = Array.isArray(it.images) ? it.images.filter((x: any) => typeof x === 'string') : [];
+            record[it.id] = { coverUrl: typeof it.coverUrl === 'string' ? it.coverUrl : images[0], images };
+          }
+        }
+
+        setProjectMediaById(record);
+      } catch {
+        if (!cancelled) setProjectMediaById({});
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const getCoverUrl = useMemo(() => {
+    return (p: Project) => projectMediaById[p.id]?.coverUrl || projectMediaById[p.id]?.images?.[0] || p.imageUrl;
+  }, [projectMediaById]);
+
+  const getImages = useMemo(() => {
+    return (p: Project) => projectMediaById[p.id]?.images || [];
+  }, [projectMediaById]);
 
   const heroCoverSrc = content?.assets?.heroCover || '/images/hero-cover.jpg';
 
@@ -1328,7 +1405,12 @@ export default function App() {
 
       <AnimatePresence>
         {selectedProject && (
-          <ProjectCaseStudy project={selectedProject} onBack={() => setSelectedProject(null)} />
+          <ProjectCaseStudy
+            project={selectedProject}
+            coverUrl={getCoverUrl(selectedProject)}
+            images={getImages(selectedProject)}
+            onBack={() => setSelectedProject(null)}
+          />
         )}
       </AnimatePresence>
 
@@ -1581,6 +1663,7 @@ export default function App() {
           onSelect={setSelectedProject}
           archiveStartYear={worksArchiveStart}
           archiveEndYear={currentYear}
+          getCoverUrl={getCoverUrl}
         />
 
         {/* Stats */}

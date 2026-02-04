@@ -92,12 +92,46 @@ async function generateIntimacyManifest() {
   return { outPath, count: items.length };
 }
 
+async function generateProjectsManifest() {
+  const projectsRoot = path.join(PUBLIC_DIR, 'images', 'projects');
+  const entries = await listDirSafe(projectsRoot);
+  const folders = entries.filter((e) => e.isDirectory()).map((e) => e.name);
+
+  const items = [];
+  for (const folder of folders) {
+    const dir = path.join(projectsRoot, folder);
+    const files = (await listDirSafe(dir))
+      .filter((e) => e.isFile())
+      .map((e) => e.name)
+      .filter(isImageFile)
+      .sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }));
+
+    if (!files.length) continue;
+
+    const coverCandidate = files.find((f) => /^cover\.(jpe?g|png|webp|avif)$/i.test(f));
+    const coverName = coverCandidate || files[0];
+
+    const images = files
+      .filter((f) => f !== coverCandidate)
+      .map((name) => `/images/projects/${encodeURIComponent(folder)}/${encodeURIComponent(name)}`);
+
+    const coverUrl = `/images/projects/${encodeURIComponent(folder)}/${encodeURIComponent(coverName)}`;
+    items.push({ id: folder, coverUrl, images: [coverUrl, ...images] });
+  }
+
+  const outPath = path.join(PUBLIC_DIR, 'projects.json');
+  await fs.writeFile(outPath, JSON.stringify(items, null, 2) + '\n', 'utf8');
+  return { outPath, count: items.length };
+}
+
 async function main() {
   const gallery = await generateGalleryManifest();
   const intimacy = await generateIntimacyManifest();
+  const projects = await generateProjectsManifest();
 
   console.log(`[manifests] wrote ${path.relative(ROOT, gallery.outPath)} (${gallery.count} items)`);
   console.log(`[manifests] wrote ${path.relative(ROOT, intimacy.outPath)} (${intimacy.count} items)`);
+  console.log(`[manifests] wrote ${path.relative(ROOT, projects.outPath)} (${projects.count} items)`);
 }
 
 main().catch((err) => {

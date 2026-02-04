@@ -36,6 +36,19 @@ If you "almost never change" your site content, the simplest + safest approach i
 Open the site with `?labels=1` to show debug labels on key sections.
 Example: `http://localhost:3000/?labels=1#/`
 
+## Works (作品集) 照片子資料夾（推薦）
+
+你可以為每一個作品建立自己的照片資料夾，網站會在 build 時自動產生清單，並在作品詳情頁使用。
+
+- 資料夾規則：`public/images/projects/{projectId}/`
+- 檔名建議：`cover.jpg`（選用，當作封面）+ `001.jpg`, `002.jpg`, ...
+- 例子：
+   - `public/images/projects/1/cover.jpg`
+   - `public/images/projects/1/001.jpg`
+   - `public/images/projects/1/002.jpg`
+
+Build 時會自動生成：`public/projects.json`
+
 ## Admin / Security
 
 This project includes a lightweight admin token to protect write operations (create/update/delete projects and upload images).
