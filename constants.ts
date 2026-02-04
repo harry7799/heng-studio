@@ -12,28 +12,14 @@ export const PROJECTS: Project[] = [
     metadata: { iso: '100', aperture: 'f/2.8', shutter: '1/125', date: '2024年' }
   },
   {
-    id: '2',
-    title: '形象攝影',
-    category: 'Fashion',
-    imageUrl: 'https://custom-images.strikinglycdn.com/res/hrscywv4p/image/upload/c_limit,fl_lossy,h_9000,w_1920,f_auto,q_auto/14194393/61779_438494.jpeg',
-    metadata: { iso: '200', aperture: 'f/4.0', shutter: '1/200', date: '2024年' }
-  },
-  {
-    id: '3',
-    title: '時尚寫真',
-    category: 'Fashion',
-    imageUrl: 'https://custom-images.strikinglycdn.com/res/hrscywv4p/image/upload/c_limit,fl_lossy,h_9000,w_1920,f_auto,q_auto/14194393/76830_683964.png',
-    metadata: { iso: '400', aperture: 'f/2.0', shutter: '1/160', date: '2024年' }
-  },
-  {
-    id: '4',
-    title: '頂樓的自習課',
+    id: '5',
+    title: '婚禮紀錄',
     category: 'Dance/Theater',
     imageUrl: 'https://custom-images.strikinglycdn.com/res/hrscywv4p/image/upload/c_limit,fl_lossy,h_9000,w_1200,f_auto,q_1/14194393/118649_641015.jpg',
     metadata: { iso: '800', aperture: 'f/2.8', shutter: '1/250', date: '2021年' }
   },
   {
-    id: '5',
+    id: '4',
     title: '層中隙',
     category: 'Dance/Theater',
     imageUrl: 'https://custom-images.strikinglycdn.com/res/hrscywv4p/image/upload/c_limit,fl_lossy,h_9000,w_1200,f_auto,q_1/14194393/403491_197820.jpeg',

@@ -427,14 +427,7 @@ const ParallaxImage = ({ src, alt, className = "", intensity = 0.1 }: { src: str
 };
 
 // --- Featured Work Grid (Replaces Horizontal Scroll for better UX) ---
-const FeaturedWorkGrid = ({
-  projects,
-  getCoverUrl
-}: {
-  projects: Project[];
-  getCoverUrl?: (p: Project) => string;
-}) => {
-  const resolveCoverUrl = (p: Project) => (getCoverUrl ? getCoverUrl(p) : p.imageUrl);
+const FeaturedWorkGrid = ({ projects }: { projects: Project[] }) => {
   return (
     <section className="py-24 px-8 lg:px-16 bg-white">
       <div className="max-w-7xl mx-auto">
@@ -449,12 +442,10 @@ const FeaturedWorkGrid = ({
         </motion.div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {projects.slice(0, 4).map((project, idx) => (
+          {projects.slice(0, 1).map((project, idx) => (
             <motion.div
               key={project.id}
-              className={`relative overflow-hidden group cursor-pointer ${
-                idx === 0 ? 'md:col-span-2 aspect-[21/9]' : 'aspect-[4/5]'
-              }`}
+              className={`relative overflow-hidden group cursor-pointer md:col-span-2 aspect-[21/9]`}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: idx * 0.1 }}
@@ -462,7 +453,7 @@ const FeaturedWorkGrid = ({
               whileHover={{ scale: 0.98 }}
             >
               <img 
-                src={resolveCoverUrl(project)} 
+                src={project.imageUrl} 
                 alt={project.title}
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
               />
@@ -491,23 +482,14 @@ const InteractivePortfolioList = ({
   projects,
   onSelect,
   archiveStartYear,
-  archiveEndYear,
-  getCoverUrl
+  archiveEndYear
 }: {
   projects: Project[];
   onSelect: (p: Project) => void;
   archiveStartYear: number;
   archiveEndYear: number;
-  getCoverUrl?: (p: Project) => string;
 }) => {
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
-  const [previewIdx, setPreviewIdx] = useState<number | null>(() => (projects.length ? 0 : null));
-
-  useEffect(() => {
-    if (previewIdx === null && projects.length) setPreviewIdx(0);
-  }, [previewIdx, projects.length]);
-
-  const resolveCoverUrl = (p: Project) => (getCoverUrl ? getCoverUrl(p) : p.imageUrl);
 
   return (
     <section id="work" className="relative bg-[#F5F5F3]">
@@ -537,10 +519,7 @@ const InteractivePortfolioList = ({
               <motion.div 
                 key={project.id}
                 className="group relative border-b border-black/5 py-6 flex items-center justify-between cursor-pointer"
-                onMouseEnter={() => {
-                  setHoveredIdx(idx);
-                  setPreviewIdx(idx);
-                }}
+                onMouseEnter={() => setHoveredIdx(idx)}
                 onMouseLeave={() => setHoveredIdx(null)}
                 onClick={() => onSelect(project)}
                 data-cursor="查看"
@@ -582,41 +561,36 @@ const InteractivePortfolioList = ({
         <div className="hidden lg:block lg:col-span-5 sticky top-0 h-screen">
           <div className="h-full p-8 flex items-center justify-center bg-[#EBEBEA]">
             <AnimatePresence mode="wait">
-              {(() => {
-                const idx = hoveredIdx ?? previewIdx;
-                const p = idx !== null ? projects[idx] : null;
-                if (!p) return null;
-                return (
+              {hoveredIdx !== null && projects[hoveredIdx] ? (
                 <motion.div
-                  key={p.id}
+                  key={projects[hoveredIdx].id}
                   initial={{ opacity: 0, scale: 0.96 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.96 }}
                   transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
-                  className="relative w-full max-w-lg aspect-[2/3] overflow-hidden"
+                  className="relative w-full max-w-md aspect-[3/4] overflow-hidden"
                 >
                   <img 
-                    src={resolveCoverUrl(p)} 
-                    alt={p.title}
+                    src={projects[hoveredIdx].imageUrl} 
+                    alt={projects[hoveredIdx].title}
                     className="w-full h-full object-cover" 
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
                   <div className="absolute bottom-6 left-6 right-6">
                     <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-white/70 block mb-2">
-                      {p.category}
+                      {projects[hoveredIdx].category}
                     </span>
                     <h4 className="font-sans font-bold text-2xl text-white tracking-tight">
-                      {p.title}
+                      {projects[hoveredIdx].title}
                     </h4>
-                    {p.metadata?.date && (
+                    {projects[hoveredIdx].metadata?.date && (
                       <span className="font-mono text-[10px] text-white/50 mt-2 block">
-                        {p.metadata.date}
+                        {projects[hoveredIdx].metadata.date}
                       </span>
                     )}
                   </div>
                 </motion.div>
-                );
-              })() ?? (
+              ) : (
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -640,17 +614,7 @@ const InteractivePortfolioList = ({
 };
 
 // --- Project Detail ---
-const ProjectCaseStudy = ({
-  project,
-  images,
-  coverUrl,
-  onBack
-}: {
-  project: Project;
-  images?: string[];
-  coverUrl?: string;
-  onBack: () => void;
-}) => {
+const ProjectCaseStudy = ({ project, onBack }: { project: Project; onBack: () => void }) => {
   // Scroll lock: prevent body scroll when modal is open
   useEffect(() => {
     const originalOverflow = document.body.style.overflow;
@@ -695,15 +659,6 @@ const ProjectCaseStudy = ({
     };
   }, [project.title]);
 
-  const resolvedImages = useMemo(() => {
-    const list = Array.isArray(images) ? images.filter((x) => typeof x === 'string' && x.length > 0) : [];
-    return list.length ? list : [project.imageUrl];
-  }, [images, project.imageUrl]);
-
-  const heroSrc = coverUrl || resolvedImages[0] || project.imageUrl;
-  const detailSrc = resolvedImages[1] || heroSrc;
-  const galleryStrip = resolvedImages.slice(2, 5);
-
   return (
     <motion.div 
       initial={{ y: "100%" }}
@@ -718,7 +673,7 @@ const ProjectCaseStudy = ({
             <ArrowLeft size={14} /> 關閉
           </button>
         </MagneticButton>
-        <span className="font-sans font-black text-sm uppercase">作品 {String(project.id).padStart(2, '0')}</span>
+        <span className="font-sans font-black text-sm uppercase">作品 0{project.id}</span>
       </nav>
 
       <div className="max-w-7xl mx-auto px-8 py-32">
@@ -760,7 +715,7 @@ const ProjectCaseStudy = ({
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
-            <ParallaxImage src={heroSrc} alt="Hero" className="w-full aspect-video rounded-3xl" />
+            <ParallaxImage src={project.imageUrl} alt="Hero" className="w-full aspect-video rounded-3xl" />
           </motion.div>
           
           <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
@@ -787,21 +742,21 @@ const ProjectCaseStudy = ({
                transition={{ duration: 0.6, delay: 0.2 }}
                viewport={{ once: true }}
              >
-               <DistortionImage src={detailSrc} alt="Detail" className="w-full h-full grayscale hover:grayscale-0 transition-all duration-1000" />
+                <DistortionImage src={project.imageUrl} alt="Detail" className="w-full h-full grayscale hover:grayscale-0 transition-all duration-1000" />
              </motion.div>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-             {(galleryStrip.length ? galleryStrip : [heroSrc, detailSrc, heroSrc]).map((src, i) => (
+             {[...Array(3)].map((_, i) => (
                 <motion.div 
                   key={i} 
-                  className="aspect-[1/2] overflow-hidden rounded-2xl"
+                  className="aspect-[3/4] overflow-hidden rounded-2xl"
                   initial={{ opacity: 0, y: 50 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: i * 0.1 }}
                   viewport={{ once: true }}
                 >
-                 <DistortionImage src={src} alt={`Gallery ${i + 1}`} className="w-full h-full" />
+                   <DistortionImage src={project.imageUrl} alt={`Gallery ${i + 1}`} className="w-full h-full" />
                 </motion.div>
              ))}
           </div>
@@ -930,11 +885,9 @@ const InstagramGalleryWall = () => {
   });
 
   // Different parallax speeds for columns
-  // Keep offsets subtle; large negative offsets create visible blank space at the bottom
-  // because transforms don't affect layout height.
-  const y1 = useTransform(scrollYProgress, [0, 1], [24, -24]);
-  const y2 = useTransform(scrollYProgress, [0, 1], [12, -12]);
-  const y3 = useTransform(scrollYProgress, [0, 1], [36, -36]);
+  const y1 = useTransform(scrollYProgress, [0, 1], [0, -80]);
+  const y2 = useTransform(scrollYProgress, [0, 1], [0, -40]);
+  const y3 = useTransform(scrollYProgress, [0, 1], [0, -120]);
 
   const smoothY1 = useSpring(y1, { stiffness: 100, damping: 30 });
   const smoothY2 = useSpring(y2, { stiffness: 100, damping: 30 });
@@ -1014,30 +967,20 @@ const InstagramGalleryWall = () => {
   const getAspectClass = (size: string) => {
     switch (size) {
       case 'tall': return 'aspect-[3/4]';
-      // slightly taller so it doesn't feel "too short"
-      case 'wide': return 'aspect-[5/4]';
+      case 'wide': return 'aspect-[4/3]';
       default: return 'aspect-square';
     }
   };
 
-  const GalleryImage = ({ item, index, column }: { item: { src: string; number: number; size: string }; index: number; column?: number }) => {
+  const GalleryImage = ({ item, index }: { item: { src: string; number: number; size: string }; index: number }) => {
     const [isHovered, setIsHovered] = useState(false);
     const [isBroken, setIsBroken] = useState(false);
 
     if (isBroken) return null;
-
-    // For column 3 (rightmost), use random aspect ratios
-    const getAspectForImage = (size: string, idx: number) => {
-      if (column === 3) {
-        const randomAspects = ['aspect-[3/4]', 'aspect-[4/5]', 'aspect-[2/3]', 'aspect-[3/5]', 'aspect-[5/7]'];
-        return randomAspects[idx % randomAspects.length];
-      }
-      return getAspectClass(size);
-    };
     
     return (
       <motion.div
-        className={`relative overflow-hidden ${getAspectForImage(item.size, index)} group cursor-pointer`}
+        className={`relative overflow-hidden ${getAspectClass(item.size)} group cursor-pointer`}
         initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, delay: index * 0.1, ease: [0.25, 0.46, 0.45, 0.94] }}
@@ -1130,7 +1073,7 @@ const InstagramGalleryWall = () => {
             style={{ y: smoothY3 }}
           >
             {col3.map((item, i) => (
-              <GalleryImage key={item.src} item={item} index={i + col1.length + col2.length} column={3} />
+              <GalleryImage key={item.src} item={item} index={i + col1.length + col2.length} />
             ))}
           </motion.div>
         </div>
@@ -1362,7 +1305,6 @@ export default function App() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const { content, projects: contentProjects } = useContent();
   const projects = contentProjects?.length ? contentProjects : PROJECTS;
-  const [projectMediaById, setProjectMediaById] = useState<Record<string, { coverUrl?: string; images: string[] }>>({});
   const currentYear = useMemo(() => new Date().getFullYear(), []);
   const showLabels = useMemo(() => {
     try {
@@ -1371,43 +1313,6 @@ export default function App() {
       return false;
     }
   }, []);
-
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const r = await fetch('/projects.json', { cache: 'no-cache' });
-        if (!r.ok) throw new Error(`HTTP ${r.status}`);
-        const data = await r.json();
-        if (cancelled) return;
-
-        const record: Record<string, { coverUrl?: string; images: string[] }> = {};
-        if (Array.isArray(data)) {
-          for (const it of data) {
-            if (!it || typeof it.id !== 'string') continue;
-            const images = Array.isArray(it.images) ? it.images.filter((x: any) => typeof x === 'string') : [];
-            record[it.id] = { coverUrl: typeof it.coverUrl === 'string' ? it.coverUrl : images[0], images };
-          }
-        }
-
-        setProjectMediaById(record);
-      } catch {
-        if (!cancelled) setProjectMediaById({});
-      }
-    })();
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  const getCoverUrl = useMemo(() => {
-    return (p: Project) => projectMediaById[p.id]?.coverUrl || projectMediaById[p.id]?.images?.[0] || p.imageUrl;
-  }, [projectMediaById]);
-
-  const getImages = useMemo(() => {
-    return (p: Project) => projectMediaById[p.id]?.images || [];
-  }, [projectMediaById]);
 
   const heroCoverSrc = content?.assets?.heroCover || '/images/hero-cover.jpg';
 
@@ -1421,12 +1326,7 @@ export default function App() {
 
       <AnimatePresence>
         {selectedProject && (
-          <ProjectCaseStudy
-            project={selectedProject}
-            coverUrl={getCoverUrl(selectedProject)}
-            images={getImages(selectedProject)}
-            onBack={() => setSelectedProject(null)}
-          />
+          <ProjectCaseStudy project={selectedProject} onBack={() => setSelectedProject(null)} />
         )}
       </AnimatePresence>
 
@@ -1671,7 +1571,7 @@ export default function App() {
         <InstagramGalleryWall />
 
         {/* Featured Work Grid */}
-        <FeaturedWorkGrid projects={projects} getCoverUrl={getCoverUrl} />
+        <FeaturedWorkGrid projects={projects} />
 
         {/* Portfolio List */}
         <InteractivePortfolioList
@@ -1679,7 +1579,6 @@ export default function App() {
           onSelect={setSelectedProject}
           archiveStartYear={worksArchiveStart}
           archiveEndYear={currentYear}
-          getCoverUrl={getCoverUrl}
         />
 
         {/* Stats */}
