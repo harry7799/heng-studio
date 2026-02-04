@@ -83,29 +83,32 @@ const StaggerText = ({ text, className = "", delay = 0 }: { text: string; classN
 const DistortionImage = ({ src, alt, className = "" }: { src: string; alt: string; className?: string }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
+  const imgRef = useRef<HTMLImageElement | null>(null);
+
+  useEffect(() => {
+    const img = imgRef.current;
+    if (img && img.complete && img.naturalWidth > 0) setIsLoaded(true);
+  }, []);
   
   return (
     <div
-      className={`relative overflow-hidden bg-slate-200 ${className}`}
+      className={`relative overflow-hidden bg-slate-200 group ${className}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Simple placeholder - no infinite animation */}
       {!isLoaded && (
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-100 via-slate-200 to-slate-100 z-[1]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-100 via-slate-200 to-slate-100 z-[1] img-placeholder" />
       )}
       
-      <motion.img
+      <img
+        ref={imgRef}
         src={src}
         alt={alt}
-        className="w-full h-full object-cover"
-        animate={{
-          scale: isHovered ? 1.1 : 1,
-          opacity: isLoaded ? 1 : 0
-        }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
+        className={`w-full h-full object-cover img-reveal ${isLoaded ? 'img-reveal--loaded' : ''} transition-transform duration-700 ease-out ${isHovered ? 'scale-110' : 'scale-100'}`}
         onLoad={() => setIsLoaded(true)}
         loading="lazy"
+        decoding="async"
       />
       <div
         className={`absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent transition-opacity duration-400 ${isHovered ? 'opacity-60' : 'opacity-5'}`}
@@ -291,22 +294,30 @@ const CustomCursor = () => {
 const ParallaxImage = ({ src, alt, className = "" }: { src: string; alt: string; className?: string }) => {
   const ref = useRef(null);
   const [isLoaded, setIsLoaded] = useState(false);
+  const imgRef = useRef<HTMLImageElement | null>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
   const y = useTransform(scrollYProgress, [0, 1], ['-10%', '10%']);
+
+  useEffect(() => {
+    const img = imgRef.current;
+    if (img && img.complete && img.naturalWidth > 0) setIsLoaded(true);
+  }, []);
 
   return (
     <div ref={ref} className={`relative overflow-hidden bg-slate-200 ${className}`}>
       {!isLoaded && (
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-100 via-slate-200 to-slate-100 z-[1]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-100 via-slate-200 to-slate-100 z-[1] img-placeholder" />
       )}
       
       <motion.img 
+        ref={imgRef}
         style={{ y }} 
         src={src} 
         alt={alt} 
-        className={`absolute inset-0 w-full h-[120%] object-cover transition-opacity duration-500 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+        className={`absolute inset-0 w-full h-[120%] object-cover img-reveal ${isLoaded ? 'img-reveal--loaded' : ''}`}
         onLoad={() => setIsLoaded(true)}
         loading="lazy"
+        decoding="async"
       />
     </div>
   );
@@ -834,20 +845,33 @@ const InstagramGalleryWall = () => {
 
   // Simplified GalleryImage - uses CSS transitions instead of framer-motion
   const GalleryImage = ({ item }: { item: { src: string; number: number; size: string } }) => {
+    const imgRef = useRef<HTMLImageElement | null>(null);
+    const [isLoaded, setIsLoaded] = useState(false);
     const [isBroken, setIsBroken] = useState(false);
+
+    useEffect(() => {
+      const img = imgRef.current;
+      if (img && img.complete && img.naturalWidth > 0) setIsLoaded(true);
+    }, []);
 
     if (isBroken) return null;
     
     return (
       <div
-        className={`relative overflow-hidden ${getAspectClass(item.size)} group cursor-pointer`}
+        className={`relative overflow-hidden ${getAspectClass(item.size)} group cursor-pointer ${isLoaded ? 'img-reveal--loaded' : ''} img-reveal`}
         data-cursor="View"
       >
+        {!isLoaded && (
+          <div className="absolute inset-0 bg-gradient-to-br from-slate-100 via-slate-200 to-slate-100 img-placeholder" />
+        )}
         <img
+          ref={imgRef}
           src={item.src}
           alt={`Gallery ${pad3(item.number)}`}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           loading="lazy"
+          decoding="async"
+          onLoad={() => setIsLoaded(true)}
           onError={() => setIsBroken(true)}
         />
         
@@ -1581,6 +1605,28 @@ export default function App() {
         }
         .animate-float {
           animation: float 15s ease-in-out infinite;
+        }
+
+        .img-placeholder {
+          opacity: 1;
+          transition: opacity 400ms ease;
+        }
+        .img-reveal {
+          opacity: 0;
+          transform: translateY(10px) scale(1.02);
+          transition: opacity 600ms cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 700ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+          will-change: opacity, transform;
+        }
+        .img-reveal--loaded {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .img-reveal {
+            opacity: 1;
+            transform: none;
+            transition: none;
+          }
         }
       `}</style>
     </div>
