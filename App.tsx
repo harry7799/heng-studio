@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform, useSpring, useInView, useMotionValue } from 'framer-motion';
-import { ArrowLeft, ArrowUpRight, Globe, Camera, Sparkles, Eye } from 'lucide-react';
+import { ArrowLeft, ArrowUpRight, Globe, Eye } from 'lucide-react';
 import { Project } from './types';
 import { useContent } from './useContent';
 import { PROJECTS } from './constants';
@@ -48,23 +48,7 @@ const MagneticButton = ({ children, className = "", strength = 0.3 }: { children
   );
 };
 
-// --- Text Blur Reveal Animation ---
-const BlurRevealText = ({ children, className = "", delay = 0 }: { children: string; className?: string; delay?: number }) => {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
-  
-  return (
-    <motion.span
-      ref={ref}
-      initial={{ filter: "blur(10px)", opacity: 0, y: 20 }}
-      animate={isInView ? { filter: "blur(0px)", opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.8, delay, ease: [0.25, 0.46, 0.45, 0.94] }}
-      className={className}
-    >
-      {children}
-    </motion.span>
-  );
-};
+
 
 // --- Character Stagger Animation ---
 const StaggerText = ({ text, className = "", delay = 0 }: { text: string; className?: string; delay?: number }) => {
@@ -93,121 +77,40 @@ const StaggerText = ({ text, className = "", delay = 0 }: { text: string; classN
   );
 };
 
-// --- Progressive Image with Blur Placeholder ---
-const ProgressiveImage = ({ 
-  src, 
-  alt, 
-  className = "", 
-  imgClassName = "",
-  children 
-}: { 
-  src: string; 
-  alt: string; 
-  className?: string; 
-  imgClassName?: string;
-  children?: React.ReactNode;
-}) => {
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [hasError, setHasError] = useState(false);
-  
-  return (
-    <div className={`relative overflow-hidden bg-slate-200 ${className}`}>
-      {/* Blur placeholder skeleton */}
-      <motion.div
-        className="absolute inset-0 bg-gradient-to-br from-slate-100 via-slate-200 to-slate-100"
-        initial={{ opacity: 1 }}
-        animate={{ opacity: isLoaded ? 0 : 1 }}
-        transition={{ duration: 0.5 }}
-      >
-        {/* Shimmer effect */}
-        <motion.div
-          className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
-          animate={{ x: ['-100%', '100%'] }}
-          transition={{ 
-            duration: 1.5, 
-            repeat: Infinity, 
-            repeatDelay: 0.5,
-            ease: "easeInOut" 
-          }}
-        />
-      </motion.div>
-      
-      {/* Actual image */}
-      <motion.img
-        src={src}
-        alt={alt}
-        className={`w-full h-full object-cover ${imgClassName}`}
-        initial={{ opacity: 0, filter: 'blur(10px)', scale: 1.05 }}
-        animate={{ 
-          opacity: isLoaded ? 1 : 0, 
-          filter: isLoaded ? 'blur(0px)' : 'blur(10px)',
-          scale: isLoaded ? 1 : 1.05
-        }}
-        transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-        onLoad={() => setIsLoaded(true)}
-        onError={() => setHasError(true)}
-        loading="lazy"
-      />
-      
-      {/* Error state */}
-      {hasError && (
-        <div className="absolute inset-0 flex items-center justify-center bg-slate-100 text-slate-400">
-          <Camera size={32} />
-        </div>
-      )}
-      
-      {children}
-    </div>
-  );
-};
 
-// --- Image with Distortion Hover ---
+
+// --- Image with Distortion Hover (Simplified) ---
 const DistortionImage = ({ src, alt, className = "" }: { src: string; alt: string; className?: string }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   
   return (
-    <motion.div
+    <div
       className={`relative overflow-hidden bg-slate-200 ${className}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Blur placeholder */}
-      <motion.div
-        className="absolute inset-0 bg-gradient-to-br from-slate-100 via-slate-200 to-slate-100 z-[1]"
-        initial={{ opacity: 1 }}
-        animate={{ opacity: isLoaded ? 0 : 1 }}
-        transition={{ duration: 0.4 }}
-        style={{ pointerEvents: 'none' }}
-      >
-        <motion.div
-          className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
-          animate={{ x: ['-100%', '100%'] }}
-          transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 0.5, ease: "easeInOut" }}
-        />
-      </motion.div>
+      {/* Simple placeholder - no infinite animation */}
+      {!isLoaded && (
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-100 via-slate-200 to-slate-100 z-[1]" />
+      )}
       
       <motion.img
         src={src}
         alt={alt}
         className="w-full h-full object-cover"
-        initial={{ filter: 'blur(10px)' }}
         animate={{
           scale: isHovered ? 1.1 : 1,
-          filter: isLoaded 
-            ? (isHovered ? "saturate(1.2) contrast(1.1) blur(0px)" : "saturate(1) contrast(1) blur(0px)")
-            : "saturate(1) contrast(1) blur(10px)"
+          opacity: isLoaded ? 1 : 0
         }}
-        transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
         onLoad={() => setIsLoaded(true)}
         loading="lazy"
       />
-      <motion.div
-        className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"
-        animate={{ opacity: isHovered ? 0.6 : 0.05 }}
-        transition={{ duration: 0.4 }}
+      <div
+        className={`absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent transition-opacity duration-400 ${isHovered ? 'opacity-60' : 'opacity-5'}`}
       />
-    </motion.div>
+    </div>
   );
 };
 
@@ -384,41 +287,24 @@ const CustomCursor = () => {
   );
 };
 
-// --- Parallax Image ---
-const ParallaxImage = ({ src, alt, className = "", intensity = 0.1 }: { src: string; alt: string; className?: string; intensity?: number }) => {
+// --- Parallax Image (Simplified) ---
+const ParallaxImage = ({ src, alt, className = "" }: { src: string; alt: string; className?: string }) => {
   const ref = useRef(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
-  const y = useTransform(scrollYProgress, [0, 1], [`-${intensity * 100}%`, `${intensity * 100}%`]);
+  const y = useTransform(scrollYProgress, [0, 1], ['-10%', '10%']);
 
   return (
     <div ref={ref} className={`relative overflow-hidden bg-slate-200 ${className}`}>
-      {/* Blur placeholder */}
-      <motion.div
-        className="absolute inset-0 bg-gradient-to-br from-slate-100 via-slate-200 to-slate-100 z-[1]"
-        initial={{ opacity: 1 }}
-        animate={{ opacity: isLoaded ? 0 : 1 }}
-        transition={{ duration: 0.5 }}
-        style={{ pointerEvents: 'none' }}
-      >
-        <motion.div
-          className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
-          animate={{ x: ['-100%', '100%'] }}
-          transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 0.5, ease: "easeInOut" }}
-        />
-      </motion.div>
+      {!isLoaded && (
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-100 via-slate-200 to-slate-100 z-[1]" />
+      )}
       
       <motion.img 
         style={{ y }} 
         src={src} 
         alt={alt} 
-        className="absolute inset-0 w-full h-[120%] object-cover"
-        initial={{ filter: 'blur(15px)', scale: 1.1 }}
-        animate={{ 
-          filter: isLoaded ? 'blur(0px)' : 'blur(15px)',
-          scale: isLoaded ? 1 : 1.1
-        }}
-        transition={{ duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
+        className={`absolute inset-0 w-full h-[120%] object-cover transition-opacity duration-500 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
         onLoad={() => setIsLoaded(true)}
         loading="lazy"
       />
@@ -767,37 +653,29 @@ const ProjectCaseStudy = ({ project, onBack }: { project: Project; onBack: () =>
 };
 
 // --- Floating Particles Background ---
+// --- Floating Particles (Reduced from 20 to 8 for performance) ---
 const FloatingParticles = () => {
   const particles = useMemo(() => 
-    Array.from({ length: 20 }, (_, i) => ({
+    Array.from({ length: 8 }, (_, i) => ({
       id: i,
       x: Math.random() * 100,
       y: Math.random() * 100,
-      size: Math.random() * 4 + 2,
-      duration: Math.random() * 20 + 10
+      size: Math.random() * 3 + 2,
     })), []
   );
 
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
       {particles.map((p) => (
-        <motion.div
+        <div
           key={p.id}
-          className="absolute rounded-full bg-white/10"
+          className="absolute rounded-full bg-white/10 animate-float"
           style={{
             left: `${p.x}%`,
             top: `${p.y}%`,
             width: p.size,
-            height: p.size
-          }}
-          animate={{
-            y: [0, -100, 0],
-            opacity: [0.2, 0.5, 0.2]
-          }}
-          transition={{
-            duration: p.duration,
-            repeat: Infinity,
-            ease: "linear"
+            height: p.size,
+            animationDelay: `${p.id * 2}s`
           }}
         />
       ))}
@@ -873,25 +751,10 @@ const StatsSection = () => {
   );
 };
 
-// --- Asymmetrical Gallery Wall: Art Gallery / Masonry Style ---
+// --- Asymmetrical Gallery Wall (Simplified - removed heavy parallax) ---
 const InstagramGalleryWall = () => {
-  const containerRef = useRef<HTMLDivElement>(null);
   const [apiItems, setApiItems] = useState<Array<{ name: string; url: string; number: number }> | null>(null);
   const [visibleCount, setVisibleCount] = useState(24);
-
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start end", "end start"]
-  });
-
-  // Different parallax speeds for columns
-  const y1 = useTransform(scrollYProgress, [0, 1], [0, -80]);
-  const y2 = useTransform(scrollYProgress, [0, 1], [0, -40]);
-  const y3 = useTransform(scrollYProgress, [0, 1], [0, -120]);
-
-  const smoothY1 = useSpring(y1, { stiffness: 100, damping: 30 });
-  const smoothY2 = useSpring(y2, { stiffness: 100, damping: 30 });
-  const smoothY3 = useSpring(y3, { stiffness: 100, damping: 30 });
 
   useEffect(() => {
     let cancelled = false;
@@ -918,12 +781,11 @@ const InstagramGalleryWall = () => {
 
     (async () => {
       try {
-        // Vercel-friendly: generated at build-time in /public
         const data = await fetchJson('/gallery.json');
         if (!cancelled) setApiItems(normalize(data));
         return;
       } catch {
-        // Local dev fallback (Express API)
+        // Local dev fallback
       }
 
       try {
@@ -934,9 +796,7 @@ const InstagramGalleryWall = () => {
       }
     })();
 
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
   }, []);
 
   const pad3 = (n: number) => String(n).padStart(3, '0');
@@ -972,56 +832,40 @@ const InstagramGalleryWall = () => {
     }
   };
 
-  const GalleryImage = ({ item, index }: { item: { src: string; number: number; size: string }; index: number }) => {
-    const [isHovered, setIsHovered] = useState(false);
+  // Simplified GalleryImage - uses CSS transitions instead of framer-motion
+  const GalleryImage = ({ item }: { item: { src: string; number: number; size: string } }) => {
     const [isBroken, setIsBroken] = useState(false);
 
     if (isBroken) return null;
     
     return (
-      <motion.div
+      <div
         className={`relative overflow-hidden ${getAspectClass(item.size)} group cursor-pointer`}
-        initial={{ opacity: 0, y: 40 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7, delay: index * 0.1, ease: [0.25, 0.46, 0.45, 0.94] }}
-        viewport={{ once: true, margin: "-10%" }}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
         data-cursor="View"
       >
-        <motion.img
+        <img
           src={item.src}
           alt={`Gallery ${pad3(item.number)}`}
-          className="w-full h-full object-cover"
-          animate={{ scale: isHovered ? 1.05 : 1 }}
-          transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           loading="lazy"
           onError={() => setIsBroken(true)}
         />
         
         {/* Hover overlay */}
-        <motion.div
-          className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-500"
-        />
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-500" />
 
-        {/* Caption outside image */}
-        <motion.div
-          className="absolute -bottom-6 left-0"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: isHovered ? 1 : 0.4 }}
-          transition={{ duration: 0.3 }}
-        >
+        {/* Caption */}
+        <div className="absolute -bottom-6 left-0 opacity-40 group-hover:opacity-100 transition-opacity duration-300">
           <span className="font-mono text-[9px] text-slate-400 tracking-widest uppercase">
             No. {pad3(item.number)}
           </span>
-        </motion.div>
-      </motion.div>
+        </div>
+      </div>
     );
   };
 
   return (
     <section 
-      ref={containerRef}
       className="py-32 lg:py-48 px-8 lg:px-16 bg-white"
     >
       <div className="max-w-7xl mx-auto">
@@ -1045,37 +889,28 @@ const InstagramGalleryWall = () => {
           </div>
         </motion.div>
 
-        {/* Asymmetrical 3-Column Grid with Parallax */}
+        {/* Asymmetrical 3-Column Grid - CSS-only offsets for performance */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
           {/* Column 1 */}
-          <motion.div 
-            className="flex flex-col gap-16"
-            style={{ y: smoothY1 }}
-          >
-            {col1.map((item, i) => (
-              <GalleryImage key={item.src} item={item} index={i} />
+          <div className="flex flex-col gap-16">
+            {col1.map((item) => (
+              <GalleryImage key={item.src} item={item} />
             ))}
-          </motion.div>
+          </div>
 
           {/* Column 2 - Offset vertically */}
-          <motion.div 
-            className="flex flex-col gap-16 mt-0 md:mt-24"
-            style={{ y: smoothY2 }}
-          >
-            {col2.map((item, i) => (
-              <GalleryImage key={item.src} item={item} index={i + col1.length} />
+          <div className="flex flex-col gap-16 mt-0 md:mt-24">
+            {col2.map((item) => (
+              <GalleryImage key={item.src} item={item} />
             ))}
-          </motion.div>
+          </div>
 
           {/* Column 3 - Different offset */}
-          <motion.div 
-            className="flex flex-col gap-16 mt-0 md:mt-12"
-            style={{ y: smoothY3 }}
-          >
-            {col3.map((item, i) => (
-              <GalleryImage key={item.src} item={item} index={i + col1.length + col2.length} />
+          <div className="flex flex-col gap-16 mt-0 md:mt-12">
+            {col3.map((item) => (
+              <GalleryImage key={item.src} item={item} />
             ))}
-          </motion.div>
+          </div>
         </div>
 
         {/* Load more */}
@@ -1739,6 +1574,13 @@ export default function App() {
         }
         .animate-spin-slow {
           animation: spin-slow 12s linear infinite;
+        }
+        @keyframes float {
+          0%, 100% { transform: translateY(0); opacity: 0.2; }
+          50% { transform: translateY(-50px); opacity: 0.5; }
+        }
+        .animate-float {
+          animation: float 15s ease-in-out infinite;
         }
       `}</style>
     </div>
