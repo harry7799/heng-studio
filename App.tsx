@@ -117,7 +117,7 @@ const DistortionImage = ({ src, alt, className = "" }: { src: string; alt: strin
   );
 };
 
-// --- Improved Dual-Layer Cursor ---
+// --- Improved Dual-Layer Cursor (no trailing dot) ---
 const CustomCursor = () => {
   const [enabled, setEnabled] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
@@ -127,8 +127,6 @@ const CustomCursor = () => {
   const x = useMotionValue(-100);
   const y = useMotionValue(-100);
 
-  const dotX = useSpring(x, { damping: 35, stiffness: 900, mass: 0.15 });
-  const dotY = useSpring(y, { damping: 35, stiffness: 900, mass: 0.15 });
   const ringX = useSpring(x, { damping: 28, stiffness: 360, mass: 0.55 });
   const ringY = useSpring(y, { damping: 28, stiffness: 360, mass: 0.55 });
 
@@ -210,26 +208,28 @@ const CustomCursor = () => {
         }}
         transition={{ type: 'spring', damping: 26, stiffness: 300, mass: 0.5 }}
       >
-        {/* Outer ring (larger) */}
+        {/* Outer ring (larger) - turns white on hover */}
         <motion.div
           className="absolute inset-0 rounded-full border"
           animate={{
-            borderColor: isHovering ? 'rgba(0,0,0,0.35)' : 'rgba(0,0,0,0.15)',
-            borderWidth: 1,
+            borderColor: isHovering ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.15)',
+            borderWidth: isHovering ? 1.5 : 1,
           }}
           transition={{ duration: 0.3 }}
+          style={{ boxShadow: isHovering ? '0 2px 8px rgba(0,0,0,0.3)' : 'none' }}
         />
         
-        {/* Inner ring (smaller) */}
+        {/* Inner ring (smaller) - turns white on hover */}
         <motion.div
           className="absolute rounded-full border"
           animate={{
             width: isHovering ? 72 : 38,
             height: isHovering ? 72 : 38,
-            borderColor: isHovering ? 'rgba(0,0,0,0.5)' : 'rgba(0,0,0,0.25)',
-            borderWidth: isHovering ? 1.5 : 1,
+            borderColor: isHovering ? 'rgba(255,255,255,0.95)' : 'rgba(0,0,0,0.25)',
+            borderWidth: isHovering ? 2 : 1,
           }}
           transition={{ type: 'spring', damping: 26, stiffness: 300, mass: 0.5 }}
+          style={{ boxShadow: isHovering ? '0 2px 12px rgba(0,0,0,0.4)' : 'none' }}
         />
         
         {/* H Letter - Hermès style */}
@@ -241,7 +241,7 @@ const CustomCursor = () => {
               animate={{ opacity: 1, scale: 1 }} 
               exit={{ opacity: 0, scale: 0.6 }}
               transition={{ duration: 0.2 }}
-              className="text-[11px] font-sans font-bold uppercase tracking-[0.15em] text-black/80"
+              className="text-[11px] font-sans font-bold uppercase tracking-[0.15em] text-white drop-shadow-md"
             >
               {cursorText}
             </motion.span>
@@ -261,7 +261,7 @@ const CustomCursor = () => {
                 stroke="currentColor"
                 strokeWidth="2"
                 strokeLinecap="square"
-                className="text-black/70"
+                className={isHovering ? 'text-white drop-shadow-md' : 'text-black/70'}
                 initial={{ pathLength: 0 }}
                 animate={{ pathLength: 1 }}
                 transition={{ duration: 0.5, ease: "easeOut" }}
@@ -270,22 +270,6 @@ const CustomCursor = () => {
           )}
         </AnimatePresence>
       </motion.div>
-
-      {/* Small trailing dot */}
-      <motion.div
-        className="fixed top-0 left-0 w-1.5 h-1.5 bg-black/50 rounded-full pointer-events-none z-[9998]"
-        style={{ 
-          x: dotX, 
-          y: dotY,
-          translateX: '-50%',
-          translateY: '-50%'
-        }}
-        animate={{
-          scale: isClicked ? 1.5 : 1,
-          opacity: isHovering ? 0 : 1
-        }}
-        transition={{ type: 'spring', damping: 30, stiffness: 400 }}
-      />
     </>
   );
 };
@@ -1609,17 +1593,22 @@ export default function App() {
 
         .img-placeholder {
           opacity: 1;
-          transition: opacity 400ms ease;
+          transition: opacity 500ms ease;
         }
         .img-reveal {
           opacity: 0;
-          transform: translateY(10px) scale(1.02);
-          transition: opacity 600ms cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 700ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
-          will-change: opacity, transform;
+          transform: translateY(24px) scale(1.03);
+          filter: blur(4px);
+          transition: 
+            opacity 800ms cubic-bezier(0.25, 0.46, 0.45, 0.94), 
+            transform 900ms cubic-bezier(0.165, 0.84, 0.44, 1),
+            filter 700ms ease-out;
+          will-change: opacity, transform, filter;
         }
         .img-reveal--loaded {
           opacity: 1;
           transform: translateY(0) scale(1);
+          filter: blur(0);
         }
         @media (prefers-reduced-motion: reduce) {
           .img-reveal {
