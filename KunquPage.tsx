@@ -289,7 +289,7 @@ const KunquPage = () => {
 
 const GalleryImage = ({ src, index, onClick }: { src: string; index: number; onClick: () => void }) => {
   const [isHovered, setIsHovered] = useState(false);
-  const aspects = ['aspect-[2/3]', 'aspect-[3/5]', 'aspect-[1/2]'];
+  const aspects = ['aspect-[3/4]', 'aspect-[4/5]', 'aspect-square'];
   const aspect = aspects[index % 3];
 
   return (
