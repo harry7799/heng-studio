@@ -427,7 +427,14 @@ const ParallaxImage = ({ src, alt, className = "", intensity = 0.1 }: { src: str
 };
 
 // --- Featured Work Grid (Replaces Horizontal Scroll for better UX) ---
-const FeaturedWorkGrid = ({ projects }: { projects: Project[] }) => {
+const FeaturedWorkGrid = ({
+  projects,
+  getCoverUrl
+}: {
+  projects: Project[];
+  getCoverUrl?: (p: Project) => string;
+}) => {
+  const resolveCoverUrl = (p: Project) => (getCoverUrl ? getCoverUrl(p) : p.imageUrl);
   return (
     <section className="py-24 px-8 lg:px-16 bg-white">
       <div className="max-w-7xl mx-auto">
@@ -455,7 +462,7 @@ const FeaturedWorkGrid = ({ projects }: { projects: Project[] }) => {
               whileHover={{ scale: 0.98 }}
             >
               <img 
-                src={project.imageUrl} 
+                src={resolveCoverUrl(project)} 
                 alt={project.title}
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
               />
@@ -1655,7 +1662,7 @@ export default function App() {
         <InstagramGalleryWall />
 
         {/* Featured Work Grid */}
-        <FeaturedWorkGrid projects={projects} />
+        <FeaturedWorkGrid projects={projects} getCoverUrl={getCoverUrl} />
 
         {/* Portfolio List */}
         <InteractivePortfolioList
