@@ -83,16 +83,20 @@ const StaggerText = ({ text, className = "", delay = 0 }: { text: string; classN
 const DistortionImage = ({ src, alt, className = "" }: { src: string; alt: string; className?: string }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [isRevealed, setIsRevealed] = useState(false);
   const imgRef = useRef<HTMLImageElement | null>(null);
 
   useEffect(() => {
     const img = imgRef.current;
-    if (img && img.complete && img.naturalWidth > 0) setIsLoaded(true);
+    if (img && img.complete && img.naturalWidth > 0) {
+      setIsLoaded(true);
+      requestAnimationFrame(() => setIsRevealed(true));
+    }
   }, []);
   
   return (
     <div
-      className={`relative overflow-hidden bg-slate-200 group ${className}`}
+      className={`relative overflow-hidden bg-slate-200 group ${isLoaded ? 'img-loaded' : ''} ${className}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -105,8 +109,11 @@ const DistortionImage = ({ src, alt, className = "" }: { src: string; alt: strin
         ref={imgRef}
         src={src}
         alt={alt}
-        className={`w-full h-full object-cover img-reveal ${isLoaded ? 'img-reveal--loaded' : ''} transition-transform duration-700 ease-out ${isHovered ? 'scale-110' : 'scale-100'}`}
-        onLoad={() => setIsLoaded(true)}
+        className={`w-full h-full object-cover img-reveal ${isRevealed ? 'img-reveal--loaded' : ''} transition-transform duration-700 ease-out ${isHovered ? 'scale-110' : 'scale-100'}`}
+        onLoad={() => {
+          setIsLoaded(true);
+          requestAnimationFrame(() => setIsRevealed(true));
+        }}
         loading="lazy"
         decoding="async"
       />
@@ -278,17 +285,21 @@ const CustomCursor = () => {
 const ParallaxImage = ({ src, alt, className = "" }: { src: string; alt: string; className?: string }) => {
   const ref = useRef(null);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [isRevealed, setIsRevealed] = useState(false);
   const imgRef = useRef<HTMLImageElement | null>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
   const y = useTransform(scrollYProgress, [0, 1], ['-10%', '10%']);
 
   useEffect(() => {
     const img = imgRef.current;
-    if (img && img.complete && img.naturalWidth > 0) setIsLoaded(true);
+    if (img && img.complete && img.naturalWidth > 0) {
+      setIsLoaded(true);
+      requestAnimationFrame(() => setIsRevealed(true));
+    }
   }, []);
 
   return (
-    <div ref={ref} className={`relative overflow-hidden bg-slate-200 ${className}`}>
+    <div ref={ref} className={`relative overflow-hidden bg-slate-200 ${isLoaded ? 'img-loaded' : ''} ${className}`}>
       {!isLoaded && (
         <div className="absolute inset-0 bg-gradient-to-br from-slate-100 via-slate-200 to-slate-100 z-[1] img-placeholder" />
       )}
@@ -298,8 +309,11 @@ const ParallaxImage = ({ src, alt, className = "" }: { src: string; alt: string;
         style={{ y }} 
         src={src} 
         alt={alt} 
-        className={`absolute inset-0 w-full h-[120%] object-cover img-reveal ${isLoaded ? 'img-reveal--loaded' : ''}`}
-        onLoad={() => setIsLoaded(true)}
+        className={`absolute inset-0 w-full h-[120%] object-cover img-reveal ${isRevealed ? 'img-reveal--loaded' : ''}`}
+        onLoad={() => {
+          setIsLoaded(true);
+          requestAnimationFrame(() => setIsRevealed(true));
+        }}
         loading="lazy"
         decoding="async"
       />
@@ -831,18 +845,22 @@ const InstagramGalleryWall = () => {
   const GalleryImage = ({ item }: { item: { src: string; number: number; size: string } }) => {
     const imgRef = useRef<HTMLImageElement | null>(null);
     const [isLoaded, setIsLoaded] = useState(false);
+    const [isRevealed, setIsRevealed] = useState(false);
     const [isBroken, setIsBroken] = useState(false);
 
     useEffect(() => {
       const img = imgRef.current;
-      if (img && img.complete && img.naturalWidth > 0) setIsLoaded(true);
+      if (img && img.complete && img.naturalWidth > 0) {
+        setIsLoaded(true);
+        requestAnimationFrame(() => setIsRevealed(true));
+      }
     }, []);
 
     if (isBroken) return null;
     
     return (
       <div
-        className={`relative overflow-hidden ${getAspectClass(item.size)} group cursor-pointer ${isLoaded ? 'img-reveal--loaded' : ''} img-reveal`}
+        className={`relative overflow-hidden ${getAspectClass(item.size)} group cursor-pointer ${isLoaded ? 'img-loaded' : ''}`}
         data-cursor="View"
       >
         {!isLoaded && (
@@ -852,10 +870,13 @@ const InstagramGalleryWall = () => {
           ref={imgRef}
           src={item.src}
           alt={`Gallery ${pad3(item.number)}`}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          className={`w-full h-full object-cover img-reveal ${isRevealed ? 'img-reveal--loaded' : ''} transition-transform duration-500 group-hover:scale-105`}
           loading="lazy"
           decoding="async"
-          onLoad={() => setIsLoaded(true)}
+          onLoad={() => {
+            setIsLoaded(true);
+            requestAnimationFrame(() => setIsRevealed(true));
+          }}
           onError={() => setIsBroken(true)}
         />
         
@@ -1594,6 +1615,9 @@ export default function App() {
         .img-placeholder {
           opacity: 1;
           transition: opacity 500ms ease;
+        }
+        .img-loaded .img-placeholder {
+          opacity: 0;
         }
         .img-reveal {
           opacity: 0;
