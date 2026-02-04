@@ -763,7 +763,7 @@ const StatsSection = () => {
 // --- Asymmetrical Gallery Wall (Simplified - removed heavy parallax) ---
 const InstagramGalleryWall = () => {
   const [apiItems, setApiItems] = useState<Array<{ name: string; url: string; number: number }> | null>(null);
-  const [visibleCount, setVisibleCount] = useState(24);
+  const [visibleCount, setVisibleCount] = useState(30);
 
   useEffect(() => {
     let cancelled = false;
@@ -829,9 +829,35 @@ const InstagramGalleryWall = () => {
   const galleryItems = useMemo(() => allItems.slice(0, visibleCount), [allItems, visibleCount]);
   const totalCount = allItems.length;
 
-  const col1 = galleryItems.filter((_, idx) => idx % 3 === 0);
-  const col2 = galleryItems.filter((_, idx) => idx % 3 === 1);
-  const col3 = galleryItems.filter((_, idx) => idx % 3 === 2);
+  const [col1, col2, col3] = useMemo(() => {
+    const cols: Array<Array<{ src: string; number: number; size: string }>> = [[], [], []];
+    const heights = [0, 0, 0];
+
+    const getEstimatedUnits = (size: string) => {
+      switch (size) {
+        case 'tall':
+          return 4 / 3;
+        case 'wide':
+          return 3 / 4;
+        default:
+          return 1;
+      }
+    };
+
+    for (const item of galleryItems) {
+      const est = getEstimatedUnits(item.size);
+      const colIdx = heights[0] <= heights[1] && heights[0] <= heights[2]
+        ? 0
+        : heights[1] <= heights[2]
+          ? 1
+          : 2;
+
+      cols[colIdx].push(item);
+      heights[colIdx] += est + 0.35; // add a small constant to approximate the vertical gap
+    }
+
+    return cols as [typeof cols[0], typeof cols[1], typeof cols[2]];
+  }, [galleryItems]);
 
   const getAspectClass = (size: string) => {
     switch (size) {
@@ -927,15 +953,15 @@ const InstagramGalleryWall = () => {
             ))}
           </div>
 
-          {/* Column 2 - Offset vertically */}
-          <div className="flex flex-col gap-16 mt-0 md:mt-24">
+          {/* Column 2 */}
+          <div className="flex flex-col gap-16">
             {col2.map((item) => (
               <GalleryImage key={item.src} item={item} />
             ))}
           </div>
 
-          {/* Column 3 - Different offset */}
-          <div className="flex flex-col gap-16 mt-0 md:mt-12">
+          {/* Column 3 */}
+          <div className="flex flex-col gap-16">
             {col3.map((item) => (
               <GalleryImage key={item.src} item={item} />
             ))}
@@ -951,7 +977,7 @@ const InstagramGalleryWall = () => {
             <MagneticButton>
               <button
                 type="button"
-                onClick={() => setVisibleCount((c) => Math.min(totalCount, c + 24))}
+                onClick={() => setVisibleCount((c) => Math.min(totalCount, c + 30))}
                 data-cursor="More"
                 className="font-mono text-[11px] uppercase tracking-widest text-[#101010] flex items-center gap-3 group border border-black/10 px-6 py-3 hover:border-black/30 transition-colors"
               >
