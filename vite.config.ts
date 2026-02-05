@@ -20,10 +20,8 @@ export default defineConfig(({ mode }) => {
         },
       },
       plugins: [react()],
-      define: {
-        'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),
-        'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY)
-      },
+      // Do NOT inject secret keys into the client bundle.
+      // Keep API keys on the server only and proxy requests through your backend.
       resolve: {
         alias: {
           '@': path.resolve(__dirname, '.'),
