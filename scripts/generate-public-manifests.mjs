@@ -55,9 +55,40 @@ async function generateGalleryManifest() {
     if (nextScore < currentScore) byNumber.set(parsed.number, next);
   }
 
-  const items = Array.from(byNumber.values())
+  const discovered = Array.from(byNumber.values())
     .sort((a, b) => a.number - b.number)
     .map(({ digitsLen, ...rest }) => rest);
+
+  // If an existing public/gallery.json is present, preserve its ordering.
+  // This lets the Gallery Admin UI reorder items without being overwritten by build-time generation.
+  const existingPath = path.join(PUBLIC_DIR, 'gallery.json');
+  let existingOrder = null;
+  try {
+    const raw = await fs.readFile(existingPath, 'utf8');
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed)) existingOrder = parsed;
+  } catch {
+    existingOrder = null;
+  }
+
+  const keyFor = (it) => String(it?.url || (it?.name ? `/images/gallery/${encodeURIComponent(it.name)}` : ''));
+  const existingIndexByKey = new Map();
+  if (existingOrder) {
+    for (let i = 0; i < existingOrder.length; i++) {
+      const k = keyFor(existingOrder[i]);
+      if (k && !existingIndexByKey.has(k)) existingIndexByKey.set(k, i);
+    }
+  }
+
+  const ordered = [...discovered].sort((a, b) => {
+    const ia = existingIndexByKey.has(a.url) ? existingIndexByKey.get(a.url) : Number.POSITIVE_INFINITY;
+    const ib = existingIndexByKey.has(b.url) ? existingIndexByKey.get(b.url) : Number.POSITIVE_INFINITY;
+    if (ia !== ib) return ia - ib;
+    return a.number - b.number;
+  });
+
+  // Renumber sequentially to match displayed order.
+  const items = ordered.map((it, i) => ({ name: it.name, url: it.url, number: i + 1 }));
 
   const outPath = path.join(PUBLIC_DIR, 'gallery.json');
   await fs.writeFile(outPath, JSON.stringify(items, null, 2) + '\n', 'utf8');
