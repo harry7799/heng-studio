@@ -3,6 +3,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import Admin from './Admin';
+import GalleryAdmin from './GalleryAdmin';
 import LightingSimulator3D from './LightingSimulator3D';
 import KunquPage from './KunquPage';
 import WeddingPage from './WeddingPage';
@@ -22,6 +23,7 @@ function useHashRoute() {
 
 function Root() {
   const hash = useHashRoute();
+  if (hash.startsWith('#/gallery-admin')) return <GalleryAdmin />;
   if (hash.startsWith('#/admin')) return <Admin />;
   if (hash.startsWith('#/lighting')) return <LightingSimulator3D />;
   if (hash.startsWith('#/kunqu')) return <KunquPage />;
