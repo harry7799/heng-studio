@@ -67,14 +67,13 @@ export default defineConfig(({ mode }) => {
           output: {
             manualChunks: {
               vendor: ['react', 'react-dom'],
-              router: ['react-router-dom'],
             },
           },
         },
         chunkSizeWarningLimit: 500,
       },
       optimizeDeps: {
-        include: ['react', 'react-dom', 'react-router-dom'],
+        include: ['react', 'react-dom'],
       },
     };
 });
