@@ -9,80 +9,8 @@ type GalleryItem = {
 };
 
 const PAGE_SIZE = 60;
-const ADMIN_PASSWORD = import.meta.env.VITE_GALLERY_ADMIN_PASSWORD || 'hengstudio2024';
 
 export default function GalleryAdmin() {
-  // Auth state
-  const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    // Check sessionStorage for existing auth
-    try {
-      return sessionStorage.getItem('gallery-admin-auth') === 'true';
-    } catch {
-      return false;
-    }
-  });
-  const [passwordInput, setPasswordInput] = useState('');
-  const [authError, setAuthError] = useState('');
-
-  const handleLogin = () => {
-    if (passwordInput === ADMIN_PASSWORD) {
-      setIsAuthenticated(true);
-      try {
-        sessionStorage.setItem('gallery-admin-auth', 'true');
-      } catch {}
-      setAuthError('');
-    } else {
-      setAuthError('密碼錯誤');
-    }
-  };
-
-  const handleLogout = () => {
-    setIsAuthenticated(false);
-    try {
-      sessionStorage.removeItem('gallery-admin-auth');
-    } catch {}
-  };
-
-  // Show login screen if not authenticated
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-[#0b0b0b] text-white flex items-center justify-center">
-        <div className="w-full max-w-sm p-8">
-          <div className="text-center mb-8">
-            <div className="font-mono text-[10px] uppercase tracking-[0.5em] text-white/60 mb-2">HENGSTUDIO</div>
-            <div className="font-sans font-black text-2xl uppercase tracking-tighter">Gallery Admin</div>
-          </div>
-          <div className="space-y-4">
-            <input
-              type="password"
-              value={passwordInput}
-              onChange={(e) => setPasswordInput(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
-              placeholder="輸入管理密碼"
-              className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-white/40"
-              autoFocus
-            />
-            {authError && (
-              <p className="text-red-400 text-sm text-center">{authError}</p>
-            )}
-            <button
-              onClick={handleLogin}
-              className="w-full py-3 bg-emerald-500 hover:bg-emerald-400 rounded-lg font-mono text-sm uppercase tracking-widest transition-colors"
-            >
-              進入管理
-            </button>
-            <a
-              href="#/"
-              className="block text-center text-white/40 hover:text-white/60 text-sm transition-colors"
-            >
-              返回首頁
-            </a>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   const [items, setItems] = useState<GalleryItem[]>([]);
   const [originalItems, setOriginalItems] = useState<GalleryItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -439,9 +367,6 @@ export default function GalleryAdmin() {
             <a href="#/" className="px-3 py-1.5 rounded-full border border-white/15 hover:border-white/40 font-mono text-[10px] uppercase tracking-widest flex items-center gap-1">
               <ArrowLeft size={12} /> Back
             </a>
-            <button onClick={handleLogout} className="px-3 py-1.5 rounded-full border border-white/15 hover:border-white/40 font-mono text-[10px] uppercase tracking-widest">
-              登出
-            </button>
             <button onClick={handleReset} disabled={!hasChanges} className="px-3 py-1.5 rounded-full border border-white/15 hover:border-white/40 disabled:opacity-40 font-mono text-[10px] uppercase tracking-widest flex items-center gap-1">
               <RotateCcw size={12} /> Reset
             </button>

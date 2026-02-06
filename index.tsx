@@ -3,11 +3,15 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import Admin from './Admin';
-import GalleryAdmin from './GalleryAdmin';
 import LightingSimulator3D from './LightingSimulator3D';
 import KunquPage from './KunquPage';
 import WeddingPage from './WeddingPage';
 import IntimacyPage from './IntimacyPage';
+
+let GalleryAdmin: React.LazyExoticComponent<React.ComponentType<any>> | null = null;
+if (import.meta.env.DEV) {
+  GalleryAdmin = React.lazy(() => import('./GalleryAdmin'));
+}
 
 function useHashRoute() {
   const [hash, setHash] = React.useState<string>(() => window.location.hash || '#/');
@@ -23,7 +27,13 @@ function useHashRoute() {
 
 function Root() {
   const hash = useHashRoute();
-  if (hash.startsWith('#/gallery-admin')) return <GalleryAdmin />;
+  if (import.meta.env.DEV && GalleryAdmin && hash.startsWith('#/gallery-admin')) {
+    return (
+      <React.Suspense fallback={null}>
+        <GalleryAdmin />
+      </React.Suspense>
+    );
+  }
   if (hash.startsWith('#/admin')) return <Admin />;
   if (hash.startsWith('#/lighting')) return <LightingSimulator3D />;
   if (hash.startsWith('#/kunqu')) return <KunquPage />;
