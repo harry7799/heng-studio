@@ -297,12 +297,7 @@ export default function PageManager() {
     setMessage({ type: 'success', text: '已重置' });
   }, [originalPages, clearSelection]);
 
-  // --- Scroll preview to highlighted image ---
-  useEffect(() => {
-    if (hoveredIdx === null || !previewRef.current) return;
-    const el = previewRef.current.querySelector(`[data-preview-idx="${hoveredIdx}"]`);
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  }, [hoveredIdx]);
+  // No auto-scroll on hover — it causes uncontrollable page jumping
 
   // --- Preview columns ---
   const previewColumns = useMemo(() => {
