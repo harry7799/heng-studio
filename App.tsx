@@ -132,11 +132,9 @@ const CustomCursor = () => {
   const [isClicked, setIsClicked] = useState(false);
   const [cursorText, setCursorText] = useState("");
 
+  // Raw position — zero lag, follows pointer exactly
   const x = useMotionValue(-100);
   const y = useMotionValue(-100);
-
-  const ringX = useSpring(x, { damping: 28, stiffness: 360, mass: 0.55 });
-  const ringY = useSpring(y, { damping: 28, stiffness: 360, mass: 0.55 });
 
   useEffect(() => {
     const mqFine = window.matchMedia?.('(pointer: fine)');
@@ -200,34 +198,34 @@ const CustomCursor = () => {
 
   return (
     <>
-      {/* Hermès-style H cursor */}
+      {/* Hermès-style H cursor — position uses raw x/y for instant response */}
       <motion.div
         className="fixed top-0 left-0 pointer-events-none z-[9999] flex items-center justify-center"
-        style={{ 
-          x: ringX, 
-          y: ringY,
+        style={{
+          x,
+          y,
           translateX: '-50%',
-          translateY: '-50%'
+          translateY: '-50%',
         }}
         animate={{
           width: isHovering ? 88 : 48,
           height: isHovering ? 88 : 48,
           scale: isClicked ? 0.85 : 1,
         }}
-        transition={{ type: 'spring', damping: 26, stiffness: 300, mass: 0.5 }}
+        transition={{ type: 'spring', damping: 30, stiffness: 400, mass: 0.3 }}
       >
-        {/* Outer ring (larger) - turns white on hover */}
+        {/* Outer ring */}
         <motion.div
           className="absolute inset-0 rounded-full border"
           animate={{
             borderColor: isHovering ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.15)',
             borderWidth: isHovering ? 1.5 : 1,
           }}
-          transition={{ duration: 0.3 }}
+          transition={{ duration: 0.25 }}
           style={{ boxShadow: isHovering ? '0 2px 8px rgba(0,0,0,0.3)' : 'none' }}
         />
-        
-        {/* Inner ring (smaller) - turns white on hover */}
+
+        {/* Inner ring */}
         <motion.div
           className="absolute rounded-full border"
           animate={{
@@ -236,19 +234,19 @@ const CustomCursor = () => {
             borderColor: isHovering ? 'rgba(255,255,255,0.95)' : 'rgba(0,0,0,0.25)',
             borderWidth: isHovering ? 2 : 1,
           }}
-          transition={{ type: 'spring', damping: 26, stiffness: 300, mass: 0.5 }}
+          transition={{ type: 'spring', damping: 30, stiffness: 400, mass: 0.3 }}
           style={{ boxShadow: isHovering ? '0 2px 12px rgba(0,0,0,0.4)' : 'none' }}
         />
-        
-        {/* H Letter - Hermès style */}
+
+        {/* H Letter / Hover text */}
         <AnimatePresence mode="wait">
           {isHovering && cursorText ? (
-            <motion.span 
+            <motion.span
               key="text"
-              initial={{ opacity: 0, scale: 0.6 }} 
-              animate={{ opacity: 1, scale: 1 }} 
+              initial={{ opacity: 0, scale: 0.6 }}
+              animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.6 }}
-              transition={{ duration: 0.2 }}
+              transition={{ duration: 0.15 }}
               className="text-[11px] font-sans font-bold uppercase tracking-[0.15em] text-white drop-shadow-md"
             >
               {cursorText}
@@ -260,7 +258,7 @@ const CustomCursor = () => {
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.8 }}
-              transition={{ duration: 0.2 }}
+              transition={{ duration: 0.15 }}
               className="w-5 h-5"
             >
               <motion.path
@@ -272,7 +270,7 @@ const CustomCursor = () => {
                 className={isHovering ? 'text-white drop-shadow-md' : 'text-black/70'}
                 initial={{ pathLength: 0 }}
                 animate={{ pathLength: 1 }}
-                transition={{ duration: 0.5, ease: "easeOut" }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
               />
             </motion.svg>
           )}
