@@ -9,8 +9,10 @@ import WeddingPage from './WeddingPage';
 import IntimacyPage from './IntimacyPage';
 
 let GalleryAdmin: React.LazyExoticComponent<React.ComponentType<any>> | null = null;
+let PageManager: React.LazyExoticComponent<React.ComponentType<any>> | null = null;
 if (import.meta.env.DEV) {
   GalleryAdmin = React.lazy(() => import('./GalleryAdmin'));
+  PageManager = React.lazy(() => import('./PageManager'));
 }
 
 function useHashRoute() {
@@ -31,6 +33,13 @@ function Root() {
     return (
       <React.Suspense fallback={null}>
         <GalleryAdmin />
+      </React.Suspense>
+    );
+  }
+  if (import.meta.env.DEV && PageManager && hash.startsWith('#/page-manager')) {
+    return (
+      <React.Suspense fallback={null}>
+        <PageManager />
       </React.Suspense>
     );
   }

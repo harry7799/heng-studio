@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import type { Project, Category } from './types';
-import { CATEGORIES } from './constants';
+import { CATEGORY_VALUES, CATEGORY_VALUE_TO_LABEL } from './constants';
 import { createProject, deleteProject, listMedia, listProjects, updateProject, uploadMedia, type MediaItem } from './cmsApi';
 
 type Draft = {
@@ -52,7 +52,7 @@ function fromDraft(d: Draft): Omit<Project, 'id'> {
 }
 
 export default function Admin() {
-  const categories = useMemo(() => CATEGORIES.filter((c) => c !== 'All') as Category[], []);
+  const categories = useMemo(() => CATEGORY_VALUES, []);
 
   const [adminToken, setAdminToken] = useState<string>(() => {
     try {
@@ -251,6 +251,18 @@ export default function Admin() {
             >
               Back to Site
             </a>
+            <a
+              href="#/page-manager"
+              className="px-4 py-2 rounded-full border border-emerald-500/40 text-emerald-300 hover:border-emerald-400 transition-colors font-mono text-[10px] uppercase tracking-widest"
+            >
+              Page Manager
+            </a>
+            <a
+              href="#/gallery-admin"
+              className="px-4 py-2 rounded-full border border-blue-500/40 text-blue-300 hover:border-blue-400 transition-colors font-mono text-[10px] uppercase tracking-widest"
+            >
+              Gallery
+            </a>
             <button
               onClick={() => {
                 try {
@@ -370,7 +382,7 @@ export default function Admin() {
               >
                 {categories.map((c) => (
                   <option key={c} value={c} className="bg-black">
-                    {c}
+                    {CATEGORY_VALUE_TO_LABEL[c] || c}
                   </option>
                 ))}
               </select>

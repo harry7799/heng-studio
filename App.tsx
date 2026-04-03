@@ -4,6 +4,7 @@ import { ArrowLeft, ArrowUpRight, Globe, Eye } from 'lucide-react';
 import { Project } from './types';
 import { useContent } from './useContent';
 import { PROJECTS } from './constants';
+import { useSEO } from './useSEO';
 
 const DebugLabel = ({ text }: { text: string }) => (
   <div className="absolute left-4 top-4 z-[90] rounded-lg bg-black/75 text-white px-3 py-2 font-mono text-[10px] uppercase tracking-widest pointer-events-none max-w-[85vw]">
@@ -1192,6 +1193,13 @@ const ServicesSection = () => {
 };
 
 export default function App() {
+  useSEO({
+    title: 'Harry Heng Studio｜高雄攝影工作室 · 形象照 · 婚紗照 · 藝術照 · 閨密寫真 · 全家福',
+    description: 'Harry Heng Studio 謝典恆攝影工作室，位於高雄，專營形象照、婚紗攝影、藝術照、閨密寫真、全家福、寵物攝影、崑曲藝術攝影及舞蹈劇場紀錄。以光影詮釋每一個值得被記住的瞬間。',
+    keywords: '高雄攝影,攝影工作室,形象照,婚紗照,婚紗攝影,藝術照,閨密寫真,全家福,寵物攝影,高雄婚紗,高雄形象照,崑曲攝影,舞蹈攝影,高雄攝影師,Harry Heng,謝典恆',
+    canonical: 'https://harryheng.studio/',
+  });
+
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const { content, projects: contentProjects } = useContent();
   const projects = contentProjects?.length ? contentProjects : PROJECTS;

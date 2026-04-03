@@ -1,15 +1,28 @@
-import React, { useState, useRef, useMemo, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform, useSpring } from 'framer-motion';
 import { ArrowLeft, ArrowUpRight, Heart, Users, Dog } from 'lucide-react';
+import { useSEO } from './useSEO';
 
-// Generate intimacy images from subfolders: bestie/family/pet
-const generateIntimacyImages = () => {
-  return [
-    { src: `/images/intimacy/bestie/01.jpg`, id: 0, category: 'bestie' },
-    { src: `/images/intimacy/family/02.jpg`, id: 1, category: 'family' },
-    { src: `/images/intimacy/pet/03.jpg`, id: 2, category: 'pet' },
-    { src: `/images/intimacy/pet/04.jpg`, id: 3, category: 'pet' },
-  ];
+// Fallback intimacy images
+const generateIntimacyImages = () => [
+  { src: `/images/intimacy/bestie/01.jpg`, id: 0, category: 'bestie' },
+  { src: `/images/intimacy/family/02.jpg`, id: 1, category: 'family' },
+  { src: `/images/intimacy/pet/03.jpg`, id: 2, category: 'pet' },
+  { src: `/images/intimacy/pet/04.jpg`, id: 3, category: 'pet' },
+];
+
+// Load images from pages.json (data-driven)
+const usePageImages = () => {
+  const [images, setImages] = useState<{ src: string; id: number; category?: string }[]>(() => generateIntimacyImages());
+  useEffect(() => {
+    fetch('/pages.json', { cache: 'no-cache' })
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data?.intimacy?.length > 0) setImages(data.intimacy);
+      })
+      .catch(() => {});
+  }, []);
+  return images;
 };
 
 const IntimacyPage = () => {
@@ -17,20 +30,29 @@ const IntimacyPage = () => {
   const [activeFilter, setActiveFilter] = useState<string>('all');
   const containerRef = useRef<HTMLDivElement>(null);
   
-  // Dynamic SEO title
-  useEffect(() => {
-    const originalTitle = document.title;
-    document.title = '親密寫真 Intimacy | Harry Heng Studio';
-    return () => { document.title = originalTitle; };
-  }, []);
+  // SEO + AEO
+  useSEO({
+    title: '高雄閨密寫真｜全家福 · 寵物攝影 · 親密時刻｜Harry Heng Studio',
+    description: '高雄閨密寫真、全家福攝影、寵物攝影推薦。Harry Heng Studio 以輕鬆自然的氛圍捕捉友誼的歡笑、家人的溫暖、毛孩的陪伴，記錄每一個珍貴的連結。',
+    keywords: '閨密寫真,全家福,寵物攝影,高雄閨密寫真,高雄全家福,高雄寵物攝影,親密寫真,朋友寫真,家庭攝影,Harry Heng,高雄攝影',
+    canonical: 'https://harryheng.studio/#/intimacy',
+    jsonLd: {
+      '@context': 'https://schema.org',
+      '@type': 'Service',
+      name: '閨密寫真 · 全家福 · 寵物攝影',
+      provider: { '@id': 'https://harryheng.studio/#business' },
+      serviceType: '寫真攝影',
+      areaServed: { '@type': 'City', name: '高雄市' },
+      description: '閨密寫真、全家福攝影、寵物攝影服務。輕鬆自然的拍攝氛圍，記錄友誼、家庭與毛孩的珍貴時刻。',
+    },
+  });
 
   // Scroll lock when lightbox is open
   useEffect(() => {
-    if (selectedImage) {
-      const originalOverflow = document.body.style.overflow;
-      document.body.style.overflow = 'hidden';
-      return () => { document.body.style.overflow = originalOverflow; };
-    }
+    if (!selectedImage) return;
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = originalOverflow; };
   }, [selectedImage]);
 
   const { scrollYProgress } = useScroll({
@@ -44,7 +66,7 @@ const IntimacyPage = () => {
   const smoothY1 = useSpring(y1, { stiffness: 100, damping: 30 });
   const smoothY2 = useSpring(y2, { stiffness: 100, damping: 30 });
 
-  const intimacyImages = useMemo(() => generateIntimacyImages(), []);
+  const intimacyImages = usePageImages();
   
   const filteredImages = activeFilter === 'all' 
     ? intimacyImages 

@@ -1,40 +1,62 @@
-import React, { useState, useRef, useMemo, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform, useSpring } from 'framer-motion';
 import { ArrowLeft, ArrowUpRight, Heart } from 'lucide-react';
+import { useSEO } from './useSEO';
 
-// Generate wedding images from the folder
+// Fallback wedding images (used if pages.json not loaded yet)
 const generateWeddingImages = () => {
   const images: { src: string; id: number }[] = [];
-  // Known files: 01, 02, 03, 06, then 089-237 range
   [1, 2, 3, 6].forEach((n, i) => {
     images.push({ src: `/images/wedding/${String(n).padStart(2, '0')}.jpg`, id: i });
   });
   for (let n = 89; n <= 160; n++) {
-    // files in the folder use three-digit names like 089.jpg
     const name = String(n).padStart(3, '0');
     images.push({ src: `/images/wedding/${name}.jpg`, id: images.length });
   }
   return images.slice(0, 24);
 };
 
+// Load images from pages.json (data-driven)
+const usePageImages = () => {
+  const [images, setImages] = useState<{ src: string; id: number }[]>(() => generateWeddingImages());
+  useEffect(() => {
+    fetch('/pages.json', { cache: 'no-cache' })
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data?.wedding?.length > 0) setImages(data.wedding);
+      })
+      .catch(() => {});
+  }, []);
+  return images;
+};
+
 const WeddingPage = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   
-  // Dynamic SEO title
-  useEffect(() => {
-    const originalTitle = document.title;
-    document.title = '婚禮攝影 Wedding | Harry Heng Studio';
-    return () => { document.title = originalTitle; };
-  }, []);
+  // SEO + AEO
+  useSEO({
+    title: '高雄婚紗攝影｜婚禮紀錄 · 婚紗照 · 訂婚攝影｜Harry Heng Studio',
+    description: '高雄專業婚紗攝影工作室 Harry Heng Studio，提供婚紗照、婚禮當天紀錄、訂婚攝影服務。以自然光影記錄愛情中最珍貴的時刻，執子之手，與子偕老。',
+    keywords: '高雄婚紗攝影,婚紗照,婚禮紀錄,婚禮攝影,訂婚攝影,高雄婚紗,婚紗攝影推薦,高雄攝影工作室,Harry Heng',
+    canonical: 'https://harryheng.studio/#/wedding',
+    jsonLd: {
+      '@context': 'https://schema.org',
+      '@type': 'Service',
+      name: '婚紗攝影服務',
+      provider: { '@id': 'https://harryheng.studio/#business' },
+      serviceType: '婚紗攝影',
+      areaServed: { '@type': 'City', name: '高雄市' },
+      description: '提供婚紗照、婚禮當天紀錄、訂婚攝影等完整婚禮影像服務。以自然光影與構圖記錄愛情中最珍貴的時刻。',
+    },
+  });
 
   // Scroll lock when lightbox is open
   useEffect(() => {
-    if (selectedImage) {
-      const originalOverflow = document.body.style.overflow;
-      document.body.style.overflow = 'hidden';
-      return () => { document.body.style.overflow = originalOverflow; };
-    }
+    if (!selectedImage) return;
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = originalOverflow; };
   }, [selectedImage]);
 
   const { scrollYProgress } = useScroll({
@@ -50,7 +72,7 @@ const WeddingPage = () => {
   const smoothY2 = useSpring(y2, { stiffness: 100, damping: 30 });
   const smoothY3 = useSpring(y3, { stiffness: 100, damping: 30 });
 
-  const weddingImages = useMemo(() => generateWeddingImages(), []);
+  const weddingImages = usePageImages();
   
   const col1 = weddingImages.filter((_, i) => i % 3 === 0);
   const col2 = weddingImages.filter((_, i) => i % 3 === 1);

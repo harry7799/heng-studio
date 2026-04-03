@@ -1,20 +1,30 @@
-import React, { useState, useRef, useMemo, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform, useSpring } from 'framer-motion';
 import { ArrowLeft, ArrowUpRight } from 'lucide-react';
+import { useSEO } from './useSEO';
 
-// Generate kunqu images from the folder
+// Fallback kunqu images
 const generateKunquImages = () => {
-  const images: { src: string; id: number }[] = [];
-  // Known files in /images/kunqu/: 01, 02, 03, 003, 005, 009, 013, etc.
   const knownFiles = [
     '01', '02', '03', '003', '005', '009', '013', '014', '017', '019',
     '023', '025', '026', '029', '031', '033', '034', '040', '041', '047',
     '049', '056', '059', '060', '062', '067', '069', '073', '075', '076',
     '081', '086', '241'
   ];
-  knownFiles.forEach((f, i) => {
-    images.push({ src: `/images/kunqu/${f}.jpg`, id: i });
-  });
+  return knownFiles.map((f, i) => ({ src: `/images/kunqu/${f}.jpg`, id: i }));
+};
+
+// Load images from pages.json (data-driven)
+const usePageImages = () => {
+  const [images, setImages] = useState<{ src: string; id: number }[]>(() => generateKunquImages());
+  useEffect(() => {
+    fetch('/pages.json', { cache: 'no-cache' })
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data?.kunqu?.length > 0) setImages(data.kunqu);
+      })
+      .catch(() => {});
+  }, []);
   return images;
 };
 
@@ -22,20 +32,29 @@ const KunquPage = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   
-  // Dynamic SEO title
-  useEffect(() => {
-    const originalTitle = document.title;
-    document.title = '崑曲藝術 Kunqu | Harry Heng Studio';
-    return () => { document.title = originalTitle; };
-  }, []);
+  // SEO + AEO
+  useSEO({
+    title: '崑曲藝術攝影｜戲曲攝影 · 藝術照 · 舞台紀錄｜Harry Heng Studio 高雄',
+    description: '以鏡頭捕捉崑曲之美，在光影流轉間凝結六百年的優雅與詩意。Harry Heng Studio 與拾翠坊崑劇團合作，紀錄牡丹亭、長生殿等經典崑曲演出藝術照。',
+    keywords: '崑曲攝影,藝術照,戲曲攝影,舞台攝影,高雄藝術照,表演藝術攝影,崑曲,Harry Heng,高雄攝影',
+    canonical: 'https://harryheng.studio/#/kunqu',
+    jsonLd: {
+      '@context': 'https://schema.org',
+      '@type': 'Service',
+      name: '崑曲藝術攝影',
+      provider: { '@id': 'https://harryheng.studio/#business' },
+      serviceType: '藝術攝影',
+      areaServed: { '@type': 'City', name: '高雄市' },
+      description: '崑曲演出紀錄、戲曲藝術攝影。以鏡頭捕捉崑曲之美，凝結六百年的優雅與詩意。',
+    },
+  });
 
   // Scroll lock when lightbox is open
   useEffect(() => {
-    if (selectedImage) {
-      const originalOverflow = document.body.style.overflow;
-      document.body.style.overflow = 'hidden';
-      return () => { document.body.style.overflow = originalOverflow; };
-    }
+    if (!selectedImage) return;
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = originalOverflow; };
   }, [selectedImage]);
 
   const { scrollYProgress } = useScroll({
@@ -51,7 +70,7 @@ const KunquPage = () => {
   const smoothY2 = useSpring(y2, { stiffness: 100, damping: 30 });
   const smoothY3 = useSpring(y3, { stiffness: 100, damping: 30 });
 
-  const kunquImages = useMemo(() => generateKunquImages(), []);
+  const kunquImages = usePageImages();
   
   const col1 = kunquImages.filter((_, i) => i % 3 === 0);
   const col2 = kunquImages.filter((_, i) => i % 3 === 1);

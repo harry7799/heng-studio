@@ -1,7 +1,28 @@
 
-import { Project, StylingProject } from './types';
+import { Project, StylingProject, Category } from './types';
 
+// Display labels (Chinese) for UI
 export const CATEGORIES: string[] = ['全部', '時尚', '婚紗', '戲曲', '舞蹈/劇場', '造型'];
+
+// Actual Category values for data storage
+export const CATEGORY_VALUES: Category[] = ['Fashion', 'Wedding', 'Kunqu Opera', 'Dance/Theater', 'Styling'];
+
+// Mapping between Chinese labels and English Category values
+export const CATEGORY_LABEL_MAP: Record<string, Category> = {
+  '時尚': 'Fashion',
+  '婚紗': 'Wedding',
+  '戲曲': 'Kunqu Opera',
+  '舞蹈/劇場': 'Dance/Theater',
+  '造型': 'Styling'
+};
+
+export const CATEGORY_VALUE_TO_LABEL: Record<Category, string> = {
+  'Fashion': '時尚',
+  'Wedding': '婚紗',
+  'Kunqu Opera': '戲曲',
+  'Dance/Theater': '舞蹈/劇場',
+  'Styling': '造型'
+};
 
 export const PROJECTS: Project[] = [
   {
@@ -14,7 +35,7 @@ export const PROJECTS: Project[] = [
   {
     id: '5',
     title: '婚禮紀錄',
-    category: 'Dance/Theater',
+    category: 'Wedding',
     imageUrl: 'https://custom-images.strikinglycdn.com/res/hrscywv4p/image/upload/c_limit,fl_lossy,h_9000,w_1200,f_auto,q_1/14194393/118649_641015.jpg',
     metadata: { iso: '800', aperture: 'f/2.8', shutter: '1/250', date: '2021年' }
   },

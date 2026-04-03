@@ -36,3 +36,6 @@ public/images/IG portfolio/
 # API runtime data (generated)
 server/uploads/
 server/data/projects.json
+
+.vercel
+.env*.local
