@@ -68,6 +68,12 @@ function sortNumbers(values: Iterable<number>) {
   return Array.from(new Set(values)).sort((a, b) => a - b);
 }
 
+function expandNumberRanges(ranges: [number, number][] = []) {
+  return ranges.flatMap(([start, end]) =>
+    Array.from({ length: end - start + 1 }, (_, index) => start + index)
+  );
+}
+
 function formatBytes(size: number) {
   if (!Number.isFinite(size)) return '';
   if (size > 1024 * 1024) return `${(size / 1024 / 1024).toFixed(1)} MB`;
@@ -125,9 +131,24 @@ export default function FashionWallAdmin() {
   const wall = config?.sections.fashionWall;
   const items = data?.items ?? [];
 
+  const computedItems = useMemo(() => {
+    if (!wall) return items;
+
+    const included = new Set(wall.included);
+    const excluded = new Set(wall.excluded);
+    const autoExcluded = new Set([...wall.autoExcluded, ...expandNumberRanges(wall.autoExcludedRanges)]);
+
+    return items.map((item) => ({
+      ...item,
+      manualIncluded: included.has(item.sourceNumber),
+      manualExcluded: excluded.has(item.sourceNumber),
+      autoExcluded: autoExcluded.has(item.sourceNumber),
+    }));
+  }, [items, wall]);
+
   const visibleItems = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
-    return items.filter((item) => {
+    return computedItems.filter((item) => {
       const excluded = isEffectivelyExcluded(item);
       const matchesFilter =
         filter === 'all' ||
@@ -144,22 +165,22 @@ export default function FashionWallAdmin() {
 
       return matchesFilter && matchesQuery;
     });
-  }, [filter, items, query]);
+  }, [computedItems, filter, query]);
 
   const stats = useMemo(() => {
-    const excludedCount = items.filter(isEffectivelyExcluded).length;
-    const forcedCount = items.filter((item) => item.manualIncluded).length;
-    const manualExcludedCount = items.filter((item) => item.manualExcluded).length;
+    const excludedCount = computedItems.filter(isEffectivelyExcluded).length;
+    const forcedCount = computedItems.filter((item) => item.manualIncluded).length;
+    const manualExcludedCount = computedItems.filter((item) => item.manualExcluded).length;
 
     return {
-      total: items.length,
-      selected: items.filter((item) => item.selected).length,
-      active: items.length - excludedCount,
+      total: computedItems.length,
+      selected: computedItems.filter((item) => item.selected).length,
+      active: computedItems.length - excludedCount,
       excluded: excludedCount,
       forced: forcedCount,
       manualExcluded: manualExcludedCount,
     };
-  }, [items]);
+  }, [computedItems]);
 
   const updateWall = useCallback((recipe: (section: FashionWallSection) => FashionWallSection) => {
     setConfig((current) => {
@@ -197,6 +218,9 @@ export default function FashionWallAdmin() {
         excluded: sortNumbers(excluded),
       };
     });
+
+    const label = mode === 'include' ? '強制使用' : mode === 'exclude' ? '排除' : '自動';
+    setMessage({ type: 'success', text: `#${sourceNumber} 已標記為「${label}」，按 Save + Rebuild 後更新首頁` });
   }, [updateWall]);
 
   const handleSave = useCallback(async () => {
