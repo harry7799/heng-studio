@@ -1,1679 +1,677 @@
-import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { motion, AnimatePresence, useScroll, useTransform, useSpring, useInView, useMotionValue } from 'framer-motion';
-import { ArrowLeft, ArrowUpRight, Globe, Eye } from 'lucide-react';
-import { Project } from './types';
+import React, { useEffect, useMemo, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import {
+  Aperture,
+  ArrowRight,
+  ArrowUpRight,
+  CalendarDays,
+  Camera,
+  CheckCircle2,
+  Heart,
+  Image as ImageIcon,
+  Instagram,
+  Mail,
+  MapPin,
+  MessageCircle,
+  Sparkles,
+  Users,
+  X,
+} from 'lucide-react';
+import type { Project } from './types';
+import { CATEGORY_VALUE_TO_LABEL, PROJECTS } from './constants';
 import { useContent } from './useContent';
-import { PROJECTS } from './constants';
 import { useSEO } from './useSEO';
 
-const DebugLabel = ({ text }: { text: string }) => (
-  <div className="absolute left-4 top-4 z-[90] rounded-lg bg-black/75 text-white px-3 py-2 font-mono text-[10px] uppercase tracking-widest pointer-events-none max-w-[85vw]">
-    {text}
-  </div>
-);
+const LINE_URL = 'https://lin.ee/mnwrpoI';
+const INSTAGRAM_URL = 'https://www.instagram.com/harrytwstudio';
+const FACEBOOK_URL = 'https://www.facebook.com/harry7797';
+const EMAIL = 'apple72899@gmail.com';
 
-// --- Magnetic Button Effect ---
-const MagneticButton = ({ children, className = "", strength = 0.3 }: { children: React.ReactNode; className?: string; strength?: number }) => {
-  const ref = useRef<HTMLDivElement>(null);
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
+type IconType = React.ComponentType<{ size?: number; className?: string; strokeWidth?: number }>;
 
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!ref.current) return;
-    const rect = ref.current.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    x.set((e.clientX - centerX) * strength);
-    y.set((e.clientY - centerY) * strength);
-  };
-
-  const handleMouseLeave = () => {
-    x.set(0);
-    y.set(0);
-  };
-
-  const springConfig = { damping: 15, stiffness: 150 };
-  const springX = useSpring(x, springConfig);
-  const springY = useSpring(y, springConfig);
-
+function SectionLabel({ children, light = false }: { children: React.ReactNode; light?: boolean }) {
   return (
-    <motion.div
-      ref={ref}
-      style={{ x: springX, y: springY }}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      className={className}
-    >
+    <span className={`font-mono text-[11px] uppercase tracking-widest ${light ? 'text-white/60' : 'text-stone-500'}`}>
       {children}
-    </motion.div>
-  );
-};
-
-
-
-// --- Character Stagger Animation ---
-const StaggerText = ({ text, className = "", delay = 0 }: { text: string; className?: string; delay?: number }) => {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-50px" });
-  const chars = text.split('');
-
-  return (
-    <span ref={ref} className={className}>
-      {chars.map((char, i) => (
-        <motion.span
-          key={i}
-          initial={{ opacity: 0, y: 100, rotateX: -90 }}
-          animate={isInView ? { opacity: 1, y: 0, rotateX: 0 } : {}}
-          transition={{
-            duration: 0.6,
-            delay: delay + i * 0.03,
-            ease: [0.215, 0.61, 0.355, 1]
-          }}
-          style={{ display: 'inline-block', transformOrigin: 'bottom' }}
-        >
-          {char === ' ' ? '\u00A0' : char}
-        </motion.span>
-      ))}
     </span>
   );
-};
+}
 
-
-
-// --- Image with Distortion Hover (Simplified) ---
-const DistortionImage = ({ src, alt, className = "" }: { src: string; alt: string; className?: string }) => {
-  const [isHovered, setIsHovered] = useState(false);
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [isRevealed, setIsRevealed] = useState(false);
-  const imgRef = useRef<HTMLImageElement | null>(null);
-
-  useEffect(() => {
-    const img = imgRef.current;
-    if (img && img.complete && img.naturalWidth > 0) {
-      setIsLoaded(true);
-      requestAnimationFrame(() => setIsRevealed(true));
-    }
-  }, []);
-  
-  return (
-    <div
-      className={`relative overflow-hidden bg-slate-200 group ${isLoaded ? 'img-loaded' : ''} ${className}`}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      {/* Simple placeholder - no infinite animation */}
-      {!isLoaded && (
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-100 via-slate-200 to-slate-100 z-[1] img-placeholder" />
-      )}
-      
-      <img
-        ref={imgRef}
-        src={src}
-        alt={alt}
-        className={`w-full h-full object-cover img-reveal ${isRevealed ? 'img-reveal--loaded' : ''} transition-transform duration-700 ease-out ${isHovered ? 'scale-110' : 'scale-100'}`}
-        onLoad={() => {
-          setIsLoaded(true);
-          requestAnimationFrame(() => setIsRevealed(true));
-        }}
-        loading="lazy"
-        decoding="async"
-      />
-      <div
-        className={`absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent transition-opacity duration-400 ${isHovered ? 'opacity-60' : 'opacity-5'}`}
-      />
-    </div>
-  );
-};
-
-// --- Improved Dual-Layer Cursor (no trailing dot) ---
-const CustomCursor = () => {
-  const [enabled, setEnabled] = useState(false);
-  const [isHovering, setIsHovering] = useState(false);
-  const [isClicked, setIsClicked] = useState(false);
-  const [cursorText, setCursorText] = useState("");
-
-  // Raw position — zero lag, follows pointer exactly
-  const x = useMotionValue(-100);
-  const y = useMotionValue(-100);
-
-  useEffect(() => {
-    const mqFine = window.matchMedia?.('(pointer: fine)');
-    const mqReduce = window.matchMedia?.('(prefers-reduced-motion: reduce)');
-
-    const computeEnabled = () => {
-      const fine = mqFine?.matches ?? false;
-      const reduce = mqReduce?.matches ?? false;
-      setEnabled(fine && !reduce);
-    };
-
-    computeEnabled();
-
-    const onChange = () => computeEnabled();
-    mqFine?.addEventListener?.('change', onChange);
-    mqReduce?.addEventListener?.('change', onChange);
-    return () => {
-      mqFine?.removeEventListener?.('change', onChange);
-      mqReduce?.removeEventListener?.('change', onChange);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!enabled) {
-      document.body.classList.remove('cursor-custom');
-      return;
-    }
-
-    document.body.classList.add('cursor-custom');
-
-    const handlePointerMove = (e: PointerEvent) => {
-      x.set(e.clientX);
-      y.set(e.clientY);
-
-      const target = e.target as HTMLElement | null;
-      const hoverData = target?.closest?.('[data-cursor]') as HTMLElement | null;
-      const nextText = hoverData?.getAttribute('data-cursor') || "";
-      const nextHovering = Boolean(hoverData);
-
-      setIsHovering((prev) => (prev === nextHovering ? prev : nextHovering));
-      setCursorText((prev) => (prev === nextText ? prev : nextText));
-    };
-
-    const handlePointerDown = (e: PointerEvent) => {
-      if (e.button === 0) setIsClicked(true);
-    };
-    const handlePointerUp = () => setIsClicked(false);
-
-    window.addEventListener('pointermove', handlePointerMove, { passive: true });
-    window.addEventListener('pointerdown', handlePointerDown, { passive: true });
-    window.addEventListener('pointerup', handlePointerUp, { passive: true });
-    return () => {
-      window.removeEventListener('pointermove', handlePointerMove);
-      window.removeEventListener('pointerdown', handlePointerDown);
-      window.removeEventListener('pointerup', handlePointerUp);
-      document.body.classList.remove('cursor-custom');
-    };
-  }, [enabled, x, y]);
-
-  if (!enabled) return null;
-
-  return (
-    <>
-      {/* Hermès-style H cursor — position uses raw x/y for instant response */}
-      <motion.div
-        className="fixed top-0 left-0 pointer-events-none z-[9999] flex items-center justify-center"
-        style={{
-          x,
-          y,
-          translateX: '-50%',
-          translateY: '-50%',
-        }}
-        animate={{
-          width: isHovering ? 88 : 48,
-          height: isHovering ? 88 : 48,
-          scale: isClicked ? 0.85 : 1,
-        }}
-        transition={{ type: 'spring', damping: 30, stiffness: 400, mass: 0.3 }}
-      >
-        {/* Outer ring */}
-        <motion.div
-          className="absolute inset-0 rounded-full border"
-          animate={{
-            borderColor: isHovering ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.15)',
-            borderWidth: isHovering ? 1.5 : 1,
-          }}
-          transition={{ duration: 0.25 }}
-          style={{ boxShadow: isHovering ? '0 2px 8px rgba(0,0,0,0.3)' : 'none' }}
-        />
-
-        {/* Inner ring */}
-        <motion.div
-          className="absolute rounded-full border"
-          animate={{
-            width: isHovering ? 72 : 38,
-            height: isHovering ? 72 : 38,
-            borderColor: isHovering ? 'rgba(255,255,255,0.95)' : 'rgba(0,0,0,0.25)',
-            borderWidth: isHovering ? 2 : 1,
-          }}
-          transition={{ type: 'spring', damping: 30, stiffness: 400, mass: 0.3 }}
-          style={{ boxShadow: isHovering ? '0 2px 12px rgba(0,0,0,0.4)' : 'none' }}
-        />
-
-        {/* H Letter / Hover text */}
-        <AnimatePresence mode="wait">
-          {isHovering && cursorText ? (
-            <motion.span
-              key="text"
-              initial={{ opacity: 0, scale: 0.6 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.6 }}
-              transition={{ duration: 0.15 }}
-              className="text-[11px] font-sans font-bold uppercase tracking-[0.15em] text-white drop-shadow-md"
-            >
-              {cursorText}
-            </motion.span>
-          ) : (
-            <motion.svg
-              key="h"
-              viewBox="0 0 24 24"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              transition={{ duration: 0.15 }}
-              className="w-5 h-5"
-            >
-              <motion.path
-                d="M4 4 L4 20 M4 12 L20 12 M20 4 L20 20"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="square"
-                className={isHovering ? 'text-white drop-shadow-md' : 'text-black/70'}
-                initial={{ pathLength: 0 }}
-                animate={{ pathLength: 1 }}
-                transition={{ duration: 0.4, ease: "easeOut" }}
-              />
-            </motion.svg>
-          )}
-        </AnimatePresence>
-      </motion.div>
-    </>
-  );
-};
-
-// --- Parallax Image (Simplified) ---
-const ParallaxImage = ({ src, alt, className = "" }: { src: string; alt: string; className?: string }) => {
-  const ref = useRef(null);
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [isRevealed, setIsRevealed] = useState(false);
-  const imgRef = useRef<HTMLImageElement | null>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
-  const y = useTransform(scrollYProgress, [0, 1], ['-10%', '10%']);
-
-  useEffect(() => {
-    const img = imgRef.current;
-    if (img && img.complete && img.naturalWidth > 0) {
-      setIsLoaded(true);
-      requestAnimationFrame(() => setIsRevealed(true));
-    }
-  }, []);
-
-  return (
-    <div ref={ref} className={`relative overflow-hidden bg-slate-200 ${isLoaded ? 'img-loaded' : ''} ${className}`}>
-      {!isLoaded && (
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-100 via-slate-200 to-slate-100 z-[1] img-placeholder" />
-      )}
-      
-      <motion.img 
-        ref={imgRef}
-        style={{ y }} 
-        src={src} 
-        alt={alt} 
-        className={`absolute inset-0 w-full h-[120%] object-cover img-reveal ${isRevealed ? 'img-reveal--loaded' : ''}`}
-        onLoad={() => {
-          setIsLoaded(true);
-          requestAnimationFrame(() => setIsRevealed(true));
-        }}
-        loading="lazy"
-        decoding="async"
-      />
-    </div>
-  );
-};
-
-// --- Featured Work Grid (Replaces Horizontal Scroll for better UX) ---
-const FeaturedWorkGrid = ({ projects }: { projects: Project[] }) => {
-  return (
-    <section className="py-24 px-8 lg:px-16 bg-white">
-      <div className="max-w-7xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="mb-12"
-        >
-          <span className="font-mono text-[10px] uppercase tracking-[0.5em] text-slate-400 block mb-4">精選</span>
-          <h2 className="font-sans font-black text-4xl lg:text-5xl tracking-tighter">Featured Works</h2>
-        </motion.div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {projects.slice(0, 1).map((project, idx) => (
-            <motion.div
-              key={project.id}
-              className={`relative overflow-hidden group cursor-pointer md:col-span-2 aspect-[21/9]`}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: idx * 0.1 }}
-              viewport={{ once: true }}
-              whileHover={{ scale: 0.98 }}
-            >
-              <img 
-                src={project.imageUrl} 
-                alt={project.title}
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity" />
-              <div className="absolute bottom-6 left-6 right-6">
-                <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-white/60 block mb-2">
-                  {project.category}
-                </span>
-                <h3 className="font-sans font-bold text-2xl lg:text-3xl text-white tracking-tight">
-                  {project.title}
-                </h3>
-              </div>
-              <div className="absolute top-6 right-6 w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                <ArrowUpRight size={18} className="text-white" />
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-};
-
-// --- Interactive Project List (Redesigned: Clean & Luxurious) ---
-const InteractivePortfolioList = ({
-  projects,
-  onSelect,
-  archiveStartYear,
-  archiveEndYear
+function IconButton({
+  href,
+  children,
+  icon: Icon,
+  variant = 'dark',
 }: {
-  projects: Project[];
-  onSelect: (p: Project) => void;
-  archiveStartYear: number;
-  archiveEndYear: number;
-}) => {
-  const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
+  href: string;
+  children: React.ReactNode;
+  icon: IconType;
+  variant?: 'dark' | 'light' | 'outline';
+}) {
+  const className =
+    variant === 'light'
+      ? 'bg-white text-black hover:bg-stone-100'
+      : variant === 'outline'
+        ? 'border border-white/25 text-white hover:border-white hover:bg-white/10'
+        : 'bg-black text-white hover:bg-stone-800';
 
   return (
-    <section id="work" className="relative bg-[#F5F5F3]">
-      <div className="grid grid-cols-1 lg:grid-cols-12 min-h-screen">
-        {/* Left: Project List */}
-        <div className="lg:col-span-7 py-24 px-8 lg:px-16 lg:pr-12">
-          <div className="mb-16 border-b border-black/10 pb-8">
-            <motion.span 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              className="font-mono text-[10px] uppercase tracking-[0.5em] text-slate-400 block mb-4"
-            >
-              精選作品
-            </motion.span>
-            <div className="flex items-end justify-between gap-6">
-              <h2 className="font-sans font-black text-5xl lg:text-7xl uppercase tracking-tighter">
-                <StaggerText text="作品集" />
-              </h2>
-              <span className="font-mono text-[10px] text-slate-400 uppercase tracking-[0.3em] pb-2">
-                {archiveStartYear}—{archiveEndYear}
-              </span>
-            </div>
-          </div>
-
-          <div className="flex flex-col">
-            {projects.map((project, idx) => (
-              <motion.div 
-                key={project.id}
-                className="group relative border-b border-black/5 py-6 flex items-center justify-between cursor-pointer"
-                onMouseEnter={() => setHoveredIdx(idx)}
-                onMouseLeave={() => setHoveredIdx(null)}
-                onClick={() => onSelect(project)}
-                data-cursor="查看"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: idx * 0.05 }}
-                viewport={{ once: true }}
-              >
-                <div className="flex items-center gap-6">
-                  <span className="font-mono text-[10px] text-slate-300 w-6">
-                    {String(idx + 1).padStart(2, '0')}
-                  </span>
-                  <h3 className={`font-sans font-bold text-xl lg:text-2xl tracking-tight transition-all duration-300 ${
-                    hoveredIdx === idx ? 'text-black' : hoveredIdx !== null ? 'text-black/30' : 'text-black/80'
-                  }`}>
-                    {project.title}
-                  </h3>
-                </div>
-                
-                <div className="flex items-center gap-4">
-                  <span className={`font-mono text-[10px] uppercase tracking-widest transition-all duration-300 ${
-                    hoveredIdx === idx ? 'text-black/60' : 'text-black/30'
-                  }`}>
-                    {project.category}
-                  </span>
-                  <motion.div
-                    animate={{ x: hoveredIdx === idx ? 0 : -8, opacity: hoveredIdx === idx ? 1 : 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <ArrowUpRight size={16} className="text-black/60" />
-                  </motion.div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-
-        {/* Right: Fixed Preview Panel */}
-        <div className="hidden lg:block lg:col-span-5 sticky top-0 h-screen">
-          <div className="h-full p-8 flex items-center justify-center bg-[#EBEBEA]">
-            <AnimatePresence mode="wait">
-              {hoveredIdx !== null && projects[hoveredIdx] ? (
-                <motion.div
-                  key={projects[hoveredIdx].id}
-                  initial={{ opacity: 0, scale: 0.96 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.96 }}
-                  transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
-                  className="relative w-full max-w-md aspect-[3/4] overflow-hidden"
-                >
-                  <img 
-                    src={projects[hoveredIdx].imageUrl} 
-                    alt={projects[hoveredIdx].title}
-                    className="w-full h-full object-cover" 
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
-                  <div className="absolute bottom-6 left-6 right-6">
-                    <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-white/70 block mb-2">
-                      {projects[hoveredIdx].category}
-                    </span>
-                    <h4 className="font-sans font-bold text-2xl text-white tracking-tight">
-                      {projects[hoveredIdx].title}
-                    </h4>
-                    {projects[hoveredIdx].metadata?.date && (
-                      <span className="font-mono text-[10px] text-white/50 mt-2 block">
-                        {projects[hoveredIdx].metadata.date}
-                      </span>
-                    )}
-                  </div>
-                </motion.div>
-              ) : (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="text-center"
-                >
-                  <div className="w-20 h-20 mx-auto mb-6 rounded-full border border-black/10 flex items-center justify-center">
-                    <Eye size={24} className="text-black/20" />
-                  </div>
-                  <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-black/30">
-                    Hover to preview
-                  </p>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-};
-
-// --- Project Detail ---
-const ProjectCaseStudy = ({ project, onBack }: { project: Project; onBack: () => void }) => {
-  // Scroll lock: prevent body scroll when modal is open
-  useEffect(() => {
-    const originalOverflow = document.body.style.overflow;
-    const originalPaddingRight = document.body.style.paddingRight;
-    
-    // Calculate scrollbar width to prevent layout shift
-    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
-    
-    document.body.style.overflow = 'hidden';
-    if (scrollbarWidth > 0) {
-      document.body.style.paddingRight = `${scrollbarWidth}px`;
-    }
-    
-    return () => {
-      document.body.style.overflow = originalOverflow;
-      document.body.style.paddingRight = originalPaddingRight;
-    };
-  }, []);
-
-  // History API: allow back button to close modal
-  useEffect(() => {
-    // Push a state when modal opens
-    window.history.pushState({ modal: 'project', projectId: project.id }, '');
-    
-    const handlePopState = (e: PopStateEvent) => {
-      // When user presses back, close the modal
-      onBack();
-    };
-    
-    window.addEventListener('popstate', handlePopState);
-    return () => {
-      window.removeEventListener('popstate', handlePopState);
-    };
-  }, [project.id, onBack]);
-
-  // Dynamic SEO title
-  useEffect(() => {
-    const originalTitle = document.title;
-    document.title = `${project.title} | Harry Heng Studio`;
-    return () => {
-      document.title = originalTitle;
-    };
-  }, [project.title]);
-
-  return (
-    <motion.div 
-      initial={{ y: "100%" }}
-      animate={{ y: 0 }}
-      exit={{ y: "100%" }}
-      transition={{ type: "spring", damping: 35, stiffness: 200 }}
-      className="fixed inset-0 z-[100] bg-[#F5F5F3] overflow-y-auto no-scrollbar"
+    <a
+      href={href}
+      target={href.startsWith('http') || href.startsWith('mailto:') ? '_blank' : undefined}
+      rel={href.startsWith('http') ? 'noreferrer' : undefined}
+      className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-lg px-5 py-3 text-sm font-semibold transition-colors ${className}`}
     >
-      <nav className="sticky top-0 w-full flex justify-between items-center p-8 z-50 bg-[#F5F5F3]/80 backdrop-blur-md">
-        <MagneticButton>
-          <button onClick={onBack} data-cursor="返回" className="font-mono text-[10px] uppercase tracking-widest flex items-center gap-2 hover:text-black/60 transition-colors">
-            <ArrowLeft size={14} /> 關閉
-          </button>
-        </MagneticButton>
-        <span className="font-sans font-black text-sm uppercase">作品 0{project.id}</span>
-      </nav>
-
-      <div className="max-w-7xl mx-auto px-8 py-32">
-        <header className="mb-32">
-          <motion.h1 
-            initial={{ y: 100, opacity: 0 }} 
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
-            className="font-sans font-black text-[12vw] uppercase leading-[0.8] mb-16 tracking-tighter"
-          >
-            {project.title}
-          </motion.h1>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-24 items-end">
-             <motion.p 
-               initial={{ opacity: 0, y: 30 }}
-               animate={{ opacity: 1, y: 0 }}
-               transition={{ delay: 0.2 }}
-               className="font-serif text-2xl italic leading-relaxed text-slate-600"
-             >
-               探索{project.category}的藝術本質。光影、質感與人體姿態的精密研究。
-             </motion.p>
-             <motion.div 
-               initial={{ opacity: 0, y: 30 }}
-               animate={{ opacity: 1, y: 0 }}
-               transition={{ delay: 0.3 }}
-               className="font-mono text-[10px] uppercase tracking-widest text-slate-400 border-l border-black pl-8"
-             >
-                <p className="mb-2">拍攝地點：上海</p>
-                <p className="mb-2">器材：Leica SL2 / Phase One</p>
-                <p>發布日期：{project.metadata?.date || '2024'}</p>
-             </motion.div>
-          </div>
-        </header>
-
-        <div className="space-y-48">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-          >
-            <ParallaxImage src={project.imageUrl} alt="Hero" className="w-full aspect-video rounded-3xl" />
-          </motion.div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
-             <motion.div 
-               className="md:col-span-7 bg-white p-12 lg:p-24 flex flex-col justify-center rounded-3xl"
-               initial={{ opacity: 0, x: -50 }}
-               whileInView={{ opacity: 1, x: 0 }}
-               transition={{ duration: 0.6 }}
-               viewport={{ once: true }}
-             >
-                <h4 className="font-sans font-black uppercase text-xs mb-8 text-slate-400">創作理念</h4>
-                <p className="font-serif text-3xl italic leading-snug">
-                  "傳統不是對灰燼的崇拜，而是對火焰的傳承。"
-                </p>
-                <p className="font-sans text-sm text-slate-500 mt-8 leading-relaxed">
-                  我們相信每一張照片都是一個故事的開始。透過鏡頭捕捉那些轉瞬即逝的美好瞬間，
-                  讓時尚與藝術在光影中交織，創造出獨一無二的視覺敘事。
-                </p>
-             </motion.div>
-             <motion.div 
-               className="md:col-span-5 h-[600px] overflow-hidden rounded-3xl"
-               initial={{ opacity: 0, x: 50 }}
-               whileInView={{ opacity: 1, x: 0 }}
-               transition={{ duration: 0.6, delay: 0.2 }}
-               viewport={{ once: true }}
-             >
-                <DistortionImage src={project.imageUrl} alt="Detail" className="w-full h-full grayscale hover:grayscale-0 transition-all duration-1000" />
-             </motion.div>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-             {[...Array(3)].map((_, i) => (
-                <motion.div 
-                  key={i} 
-                  className="aspect-[3/4] overflow-hidden rounded-2xl"
-                  initial={{ opacity: 0, y: 50 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: i * 0.1 }}
-                  viewport={{ once: true }}
-                >
-                   <DistortionImage src={project.imageUrl} alt={`Gallery ${i + 1}`} className="w-full h-full" />
-                </motion.div>
-             ))}
-          </div>
-        </div>
-      </div>
-    </motion.div>
+      <Icon size={18} />
+      <span>{children}</span>
+    </a>
   );
-};
+}
 
-// --- Floating Particles Background ---
-// --- Floating Particles (Reduced from 20 to 8 for performance) ---
-const FloatingParticles = () => {
-  const particles = useMemo(() => 
-    Array.from({ length: 8 }, (_, i) => ({
-      id: i,
-      x: Math.random() * 100,
-      y: Math.random() * 100,
-      size: Math.random() * 3 + 2,
-    })), []
-  );
-
-  return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {particles.map((p) => (
-        <div
-          key={p.id}
-          className="absolute rounded-full bg-white/10 animate-float"
-          style={{
-            left: `${p.x}%`,
-            top: `${p.y}%`,
-            width: p.size,
-            height: p.size,
-            animationDelay: `${p.id * 2}s`
-          }}
-        />
-      ))}
-    </div>
-  );
-};
-
-// --- Counter Animation ---
-const AnimatedCounter = ({ value, suffix = "" }: { value: number; suffix?: string }) => {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true });
-  const [count, setCount] = useState(0);
-
-  useEffect(() => {
-    if (isInView) {
-      let start = 0;
-      const end = value;
-      const duration = 2000;
-      const increment = end / (duration / 16);
-      
-      const timer = setInterval(() => {
-        start += increment;
-        if (start >= end) {
-          setCount(end);
-          clearInterval(timer);
-        } else {
-          setCount(Math.floor(start));
-        }
-      }, 16);
-
-      return () => clearInterval(timer);
-    }
-  }, [isInView, value]);
-
-  return (
-    <span ref={ref} className="tabular-nums">
-      {count}{suffix}
-    </span>
-  );
-};
-
-// --- Stats Section ---
-const StatsSection = () => {
-  const stats = [
-    { value: 500, suffix: "+", label: "完成專案" },
-    { value: 12, suffix: "年", label: "行業經驗" },
-    { value: 50, suffix: "+", label: "品牌合作" },
-    { value: 98, suffix: "%", label: "客戶滿意度" }
+function Header({ lightingEnabled, adminEnabled }: { lightingEnabled: boolean; adminEnabled: boolean }) {
+  const nav = [
+    { href: '#fashion', label: '時尚牆' },
+    { href: '#services', label: '服務' },
+    { href: '#work', label: '作品' },
+    { href: '#process', label: '流程' },
+    { href: '#contact', label: '聯絡' },
   ];
 
   return (
-    <section className="py-32 px-8 lg:px-24 bg-black text-white">
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-12">
-        {stats.map((stat, idx) => (
-          <motion.div
-            key={stat.label}
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: idx * 0.1 }}
-            viewport={{ once: true }}
-            className="text-center"
-          >
-            <div className="font-sans font-black text-5xl lg:text-7xl mb-4">
-              <AnimatedCounter value={stat.value} suffix={stat.suffix} />
-            </div>
-            <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-white/60">
-              {stat.label}
-            </div>
-          </motion.div>
+    <header className="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-black/45 backdrop-blur-md">
+      <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-5 py-4 text-white lg:px-8">
+        <a href="#/" className="min-w-0 shrink font-display text-lg">
+          <span className="hidden sm:inline">Harry Heng Studio</span>
+          <span className="sm:hidden">HENG</span>
+        </a>
+        <nav className="hidden items-center gap-6 text-sm text-white/75 xl:flex">
+          {nav.map((item) => (
+            <a key={item.href} href={item.href} className="transition-colors hover:text-white">
+              {item.label}
+            </a>
+          ))}
+          <a href="/wedding" className="transition-colors hover:text-white">婚紗</a>
+          <a href="/intimacy" className="transition-colors hover:text-white">寫真</a>
+          <a href="/kunqu" className="transition-colors hover:text-white">崑曲</a>
+          {lightingEnabled && <a href="/lighting" className="transition-colors hover:text-white">光位</a>}
+          {adminEnabled && <a href="/admin" className="transition-colors hover:text-white">Admin</a>}
+        </nav>
+        <a
+          href={LINE_URL}
+          target="_blank"
+          rel="noreferrer"
+          className="hidden min-h-10 shrink-0 items-center gap-2 rounded-lg bg-white px-4 py-2 text-sm font-semibold text-black transition-colors hover:bg-stone-100 sm:inline-flex"
+        >
+          <MessageCircle size={17} />
+          <span className="hidden sm:inline">預約討論</span>
+          <span className="sm:hidden">預約</span>
+        </a>
+      </div>
+    </header>
+  );
+}
+
+function Hero({ cover }: { cover: string }) {
+  return (
+    <section
+      className="relative h-[88svh] min-h-[560px] max-h-[920px] overflow-hidden bg-black bg-cover bg-[position:center_38%] bg-no-repeat text-white"
+      style={{ backgroundImage: `url(${cover})` }}
+    >
+      <div className="absolute inset-0 bg-black/55" />
+      <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black/70 to-transparent" />
+
+      <div className="relative z-10 mx-auto flex h-full max-w-7xl items-end px-5 pb-16 pt-32 lg:px-8 lg:pb-20">
+        <motion.div
+          initial={{ opacity: 0, y: 28 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="max-w-4xl"
+        >
+          <SectionLabel light>Kaohsiung Photographer / Since 2016</SectionLabel>
+          <h1 className="mt-6 font-display text-5xl leading-tight md:text-7xl lg:text-8xl">
+            Harry Heng Studio
+          </h1>
+          <p className="mt-6 max-w-2xl text-lg leading-8 text-white/80 md:text-xl">
+            高雄攝影師謝典恆。以乾淨的光影、自然的引導與細膩的情緒捕捉，拍攝形象照、婚紗婚禮、全家福、寵物寫真、崑曲與舞蹈劇場紀錄。
+          </p>
+          <div className="mt-9 flex flex-wrap gap-3">
+            <IconButton href={LINE_URL} icon={MessageCircle} variant="light">LINE 詢問檔期</IconButton>
+            <IconButton href="#work" icon={ImageIcon} variant="outline">看作品風格</IconButton>
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+function TrustStrip() {
+  const items = [
+    ['01', '拍攝前先整理想呈現的氣質與畫面，不讓你到現場才開始緊張。'],
+    ['02', '拍攝中會引導姿勢、表情與站位，保留自然狀態。'],
+    ['03', '適合個人品牌、婚紗婚禮、家庭紀念與表演藝術紀錄。'],
+  ];
+
+  return (
+    <section className="border-y border-stone-200 bg-[#F7F4EF]">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 divide-y divide-stone-200 px-5 md:grid-cols-3 md:divide-x md:divide-y-0 lg:px-8">
+        {items.map(([num, text]) => (
+          <div key={num} className="flex gap-5 py-6 md:px-6">
+            <span className="font-mono text-sm text-stone-400">{num}</span>
+            <p className="text-sm leading-7 text-stone-700">{text}</p>
+          </div>
         ))}
       </div>
     </section>
   );
+}
+
+type FashionWallItem = {
+  src: string;
+  number: number;
 };
 
-// --- Asymmetrical Gallery Wall (Simplified - removed heavy parallax) ---
-const InstagramGalleryWall = () => {
-  const [apiItems, setApiItems] = useState<Array<{ name: string; url: string; number: number }> | null>(null);
-  const [visibleCount, setVisibleCount] = useState(30);
+const fallbackFashionItems = Array.from({ length: 72 }, (_, index) => ({
+  src: `/images/fashion-wall/${String(index + 1).padStart(3, '0')}.webp`,
+  number: index + 1,
+}));
+
+function FashionMomentumWall() {
+  const [items, setItems] = useState<FashionWallItem[]>(fallbackFashionItems);
 
   useEffect(() => {
     let cancelled = false;
 
-    const normalize = (data: any) => {
-      if (!Array.isArray(data)) return [] as Array<{ name: string; url: string; number: number }>;
-      const cleaned = data
-        .filter((x: any) => x && typeof x.url === 'string')
-        .map((x: any) => ({
-          name: String(x.name || ''),
-          url: String(x.url),
-          number: Number(x.number ?? Number.parseInt(String(x.name || '').replace(/\D+/g, ''), 10))
-        }))
-        .filter((x) => Number.isFinite(x.number) && x.number > 0)
-        .sort((a, b) => a.number - b.number);
-      return cleaned;
+    fetch('/fashion-wall.json', { cache: 'no-cache' })
+      .then((response) => (response.ok ? response.json() : null))
+      .then((data) => {
+        if (!Array.isArray(data)) return;
+        const galleryItems = data
+          .filter((item) => item && typeof item.src === 'string')
+          .map((item) => ({
+            src: String(item.src),
+            number: Number(item.number || 0),
+          }))
+          .filter((item) => item.number > 0)
+          .sort((a, b) => a.number - b.number)
+          .slice(0, 36);
+
+        if (!cancelled && galleryItems.length >= 12) {
+          setItems(galleryItems);
+        }
+      })
+      .catch(() => {});
+
+    return () => {
+      cancelled = true;
     };
-
-    const fetchJson = async (url: string) => {
-      const r = await fetch(url, { cache: 'no-cache' });
-      if (!r.ok) throw new Error(`HTTP ${r.status}`);
-      return r.json();
-    };
-
-    (async () => {
-      try {
-        const data = await fetchJson('/gallery.json');
-        if (!cancelled) setApiItems(normalize(data));
-        return;
-      } catch {
-        // Local dev fallback
-      }
-
-      try {
-        const data = await fetchJson('/api/gallery');
-        if (!cancelled) setApiItems(normalize(data));
-      } catch {
-        if (!cancelled) setApiItems([]);
-      }
-    })();
-
-    return () => { cancelled = true; };
   }, []);
 
-  const pad3 = (n: number) => String(n).padStart(3, '0');
-  const sizePattern = ['tall', 'square', 'wide', 'square', 'tall', 'wide'] as const;
+  const midpoint = Math.ceil(items.length / 2);
+  const rowA = items.slice(0, midpoint);
+  const rowB = items.slice(midpoint).length ? items.slice(midpoint) : items.slice(6, 24);
 
-  const allItems = useMemo(() => {
-    const fromApi = apiItems && apiItems.length > 0;
-    const nums = fromApi ? apiItems : Array.from({ length: 321 }, (_, i) => ({
-      name: `${pad3(i + 1)}.jpg`,
-      url: `/images/gallery/${pad3(i + 1)}.jpg`,
-      number: i + 1
-    }));
-
-    return nums.map((it, idx) => ({
-      src: it.url,
-      number: it.number,
-      size: sizePattern[idx % sizePattern.length]
-    }));
-  }, [apiItems]);
-
-  const galleryItems = useMemo(() => allItems.slice(0, visibleCount), [allItems, visibleCount]);
-  const totalCount = allItems.length;
-
-  const [col1, col2, col3] = useMemo(() => {
-    const cols: Array<Array<{ src: string; number: number; size: string }>> = [[], [], []];
-    const heights = [0, 0, 0];
-
-    const getEstimatedUnits = (size: string) => {
-      switch (size) {
-        case 'tall':
-          return 4 / 3;
-        case 'wide':
-          return 3 / 4;
-        default:
-          return 1;
-      }
-    };
-
-    for (const item of galleryItems) {
-      const est = getEstimatedUnits(item.size);
-      const colIdx = heights[0] <= heights[1] && heights[0] <= heights[2]
-        ? 0
-        : heights[1] <= heights[2]
-          ? 1
-          : 2;
-
-      cols[colIdx].push(item);
-      heights[colIdx] += est + 0.35; // add a small constant to approximate the vertical gap
-    }
-
-    return cols as [typeof cols[0], typeof cols[1], typeof cols[2]];
-  }, [galleryItems]);
-
-  const getAspectClass = (size: string) => {
-    switch (size) {
-      case 'tall': return 'aspect-[3/4]';
-      case 'wide': return 'aspect-[4/3]';
-      default: return 'aspect-square';
-    }
-  };
-
-  // Simplified GalleryImage - uses CSS transitions instead of framer-motion
-  const GalleryImage = ({ item }: { item: { src: string; number: number; size: string } }) => {
-    const imgRef = useRef<HTMLImageElement | null>(null);
-    const [isLoaded, setIsLoaded] = useState(false);
-    const [isRevealed, setIsRevealed] = useState(false);
-    const [isBroken, setIsBroken] = useState(false);
-
-    useEffect(() => {
-      const img = imgRef.current;
-      if (img && img.complete && img.naturalWidth > 0) {
-        setIsLoaded(true);
-        requestAnimationFrame(() => setIsRevealed(true));
-      }
-    }, []);
-
-    if (isBroken) return null;
-    
+  const renderRow = (rowItems: FashionWallItem[], reverse = false) => {
+    const repeated = [...rowItems, ...rowItems];
     return (
-      <div
-        className={`relative overflow-hidden ${getAspectClass(item.size)} group cursor-pointer ${isLoaded ? 'img-loaded' : ''}`}
-        data-cursor="View"
-      >
-        {!isLoaded && (
-          <div className="absolute inset-0 bg-gradient-to-br from-slate-100 via-slate-200 to-slate-100 img-placeholder" />
-        )}
-        <img
-          ref={imgRef}
-          src={item.src}
-          alt={`Gallery ${pad3(item.number)}`}
-          className={`w-full h-full object-cover img-reveal ${isRevealed ? 'img-reveal--loaded' : ''} transition-transform duration-500 group-hover:scale-105`}
-          loading="lazy"
-          decoding="async"
-          onLoad={() => {
-            setIsLoaded(true);
-            requestAnimationFrame(() => setIsRevealed(true));
-          }}
-          onError={() => setIsBroken(true)}
-        />
-        
-        {/* Hover overlay */}
-        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-500" />
-
-        {/* Caption */}
-        <div className="absolute -bottom-6 left-0 opacity-40 group-hover:opacity-100 transition-opacity duration-300">
-          <span className="font-mono text-[9px] text-slate-400 tracking-widest uppercase">
-            No. {pad3(item.number)}
-          </span>
+      <div className="overflow-hidden">
+        <div className={`fashion-marquee flex w-max gap-4 ${reverse ? 'fashion-marquee-reverse' : ''}`}>
+          {repeated.map((item, index) => (
+            <div
+              key={`${item.src}-${index}`}
+              className="relative h-[250px] w-[170px] shrink-0 overflow-hidden rounded-lg bg-stone-900 sm:h-[320px] sm:w-[220px] lg:h-[390px] lg:w-[270px]"
+            >
+              <img
+                src={item.src}
+                alt={`Harry Heng Studio 時尚攝影作品 ${item.number}`}
+                className="h-full w-full object-cover transition-transform duration-700 hover:scale-105"
+                loading="eager"
+                decoding="async"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent opacity-70" />
+            </div>
+          ))}
         </div>
       </div>
     );
   };
 
   return (
-    <section 
-      className="py-32 lg:py-48 px-8 lg:px-16 bg-white"
-    >
-      <div className="max-w-7xl mx-auto">
-        {/* Section Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="mb-20 lg:mb-32"
-        >
-          <span className="font-mono text-[10px] uppercase tracking-[0.5em] text-slate-400 block mb-6">
-            Gallery · 001—{pad3(totalCount)}
-          </span>
-          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
-            <h2 className="font-display text-5xl lg:text-8xl tracking-tight text-[#101010]">
-              Gallery
+    <section id="fashion" className="scroll-mt-24 overflow-hidden bg-[#0F0F0D] py-20 text-white lg:py-28">
+      <div className="mx-auto max-w-7xl px-5 lg:px-8">
+        <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-end">
+          <div>
+            <SectionLabel light>Fashion Wall</SectionLabel>
+            <h2 className="mt-4 text-4xl font-bold leading-tight md:text-6xl">
+              先讓影像說話。
             </h2>
-            <p className="font-serif italic text-lg text-slate-500 max-w-sm">
-              Ordered by filename number (auto-synced with your gallery folder).
-            </p>
           </div>
-        </motion.div>
-
-        {/* Asymmetrical 3-Column Grid - CSS-only offsets for performance */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
-          {/* Column 1 */}
-          <div className="flex flex-col gap-16">
-            {col1.map((item) => (
-              <GalleryImage key={item.src} item={item} />
-            ))}
-          </div>
-
-          {/* Column 2 */}
-          <div className="flex flex-col gap-16">
-            {col2.map((item) => (
-              <GalleryImage key={item.src} item={item} />
-            ))}
-          </div>
-
-          {/* Column 3 */}
-          <div className="flex flex-col gap-16">
-            {col3.map((item) => (
-              <GalleryImage key={item.src} item={item} />
-            ))}
-          </div>
+          <p className="max-w-2xl text-base leading-8 text-white/70 lg:justify-self-end">
+            光線、造型、神情和姿態，會決定一張照片能不能被記住。這些時尚人像保留 Harry Heng Studio 的影像語彙：乾淨、俐落、有態度。
+          </p>
         </div>
-
-        {/* Load more */}
-        <div className="mt-16 flex flex-col items-center gap-4">
-          <div className="font-mono text-[10px] uppercase tracking-[0.4em] text-slate-400">
-            Showing {Math.min(visibleCount, totalCount)} / {totalCount}
-          </div>
-          {visibleCount < totalCount && (
-            <MagneticButton>
-              <button
-                type="button"
-                onClick={() => setVisibleCount((c) => Math.min(totalCount, c + 30))}
-                data-cursor="More"
-                className="font-mono text-[11px] uppercase tracking-widest text-[#101010] flex items-center gap-3 group border border-black/10 px-6 py-3 hover:border-black/30 transition-colors"
-              >
-                Load More
-                <ArrowUpRight size={16} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-              </button>
-            </MagneticButton>
-          )}
-        </div>
-
-        {/* Bottom CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          viewport={{ once: true }}
-          className="mt-24 lg:mt-32 flex flex-col md:flex-row items-center justify-between gap-8 border-t border-black/10 pt-12"
-        >
-          <div className="flex items-center gap-4">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-amber-400 via-rose-500 to-purple-600 p-[2px]">
-              <div className="w-full h-full rounded-full bg-white flex items-center justify-center">
-                <span className="font-display text-sm">H</span>
-              </div>
-            </div>
-            <a 
-              href="https://www.instagram.com/harrytwstudio"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-mono text-[10px] uppercase tracking-widest text-slate-500 hover:text-[#101010] transition-colors"
-            >
-              @harrytwstudio
-            </a>
-          </div>
-          
-          <MagneticButton>
-            <a 
-              href="#work" 
-              data-cursor="更多"
-              className="font-mono text-[11px] uppercase tracking-widest text-[#101010] flex items-center gap-3 group"
-            >
-              View All Works
-              <ArrowUpRight size={14} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-            </a>
-          </MagneticButton>
-        </motion.div>
       </div>
-    </section>
-  );
-};
 
-// --- Services Section: Luxury Hover-Reveal List ---
-const ServicesSection = () => {
-  const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
-  
-  const services = [
-    {
-      num: "01",
-      title: "Editorial",
-      subtitle: "雜誌／形象專題",
-      desc: "以光影和姿態敘事，適合封面、專題、藝人與品牌形象。前期 moodboard + pose sheet，交付 48hr 初選／精修 8–12 張。",
-      image: "/images/gallery/005.jpg"
-    },
-    {
-      num: "02",
-      title: "Lookbook",
-      subtitle: "型錄／新品上線",
-      desc: "為電商與陳列需求打造一致的光型與質感。規格統一、快速排程，可加購剪影、去背、細節特寫。",
-      image: "/images/gallery/012.jpg"
-    },
-    {
-      num: "03",
-      title: "Campaign",
-      subtitle: "廣告主視覺",
-      desc: "從概念到落地：分鏡、場景、道具與燈光設計。提案 Key Visual + style frames，導演式控場。",
-      image: "/images/gallery/023.jpg"
-    },
-    {
-      num: "04",
-      title: "Theater",
-      subtitle: "舞台／劇場紀錄",
-      desc: "捕捉表演藝術的張力與情感瞬間。專業劇場攝影經驗，與無垢舞蹈劇場等團隊長期合作。",
-      image: "/images/gallery/031.jpg"
-    },
-    {
-      num: "05",
-      title: "Social",
-      subtitle: "社群短影／動態",
-      desc: "Reels、幕後、產品動態與氛圍短片。15–30 秒節奏設計，直式/橫式多版本交付。",
-      image: "/images/gallery/045.jpg"
-    }
-  ];
-
-  return (
-    <section className="relative min-h-screen bg-[#F5F5F3] overflow-hidden">
-      {/* Floating preview image */}
-      <AnimatePresence>
-        {hoveredIdx !== null && (
-          <motion.div
-            key={hoveredIdx}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
-            className="fixed top-1/2 right-[10%] -translate-y-1/2 w-[35vw] max-w-[500px] aspect-[3/4] pointer-events-none z-10"
-          >
-            <img 
-              src={services[hoveredIdx].image}
-              alt={services[hoveredIdx].title}
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <div className="max-w-4xl mx-auto px-8 lg:px-16 py-32">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="mb-20"
-        >
-          <span className="font-mono text-[10px] uppercase tracking-[0.5em] text-slate-400 block mb-6">
-            Services · 服務項目
-          </span>
-          <h2 className="font-display text-5xl lg:text-7xl tracking-tight text-[#101010]">
-            What We Do
-          </h2>
-        </motion.div>
-
-        {/* Service List */}
-        <div className="border-t border-black/10">
-          {services.map((service, idx) => (
-            <motion.div
-              key={service.num}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: idx * 0.08 }}
-              viewport={{ once: true }}
-              className="border-b border-black/10 group"
-              onMouseEnter={() => setHoveredIdx(idx)}
-              onMouseLeave={() => setHoveredIdx(null)}
-              data-cursor="View"
-            >
-              <div className="py-8 lg:py-10 cursor-pointer">
-                <div className="flex items-baseline gap-6 lg:gap-10">
-                  <span className="font-mono text-[11px] text-slate-300 w-8">{service.num}</span>
-                  <div className="flex-1">
-                    <div className="flex items-baseline gap-4 flex-wrap">
-                      <h3 className={`font-display text-3xl lg:text-5xl tracking-tight transition-all duration-500 ${
-                        hoveredIdx === idx 
-                          ? 'text-[#101010] italic' 
-                          : hoveredIdx !== null 
-                            ? 'text-black/20' 
-                            : 'text-[#101010]'
-                      }`}>
-                        {service.title}
-                      </h3>
-                      <span className={`font-serif text-lg italic transition-all duration-500 ${
-                        hoveredIdx === idx ? 'text-slate-500' : 'text-slate-300'
-                      }`}>
-                        {service.subtitle}
-                      </span>
-                    </div>
-                    
-                    {/* Expandable description on hover */}
-                    <motion.div
-                      initial={false}
-                      animate={{ 
-                        height: hoveredIdx === idx ? 'auto' : 0,
-                        opacity: hoveredIdx === idx ? 1 : 0,
-                        marginTop: hoveredIdx === idx ? 16 : 0
-                      }}
-                      transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
-                      className="overflow-hidden"
-                    >
-                      <p className="font-sans text-sm leading-relaxed text-slate-500 max-w-xl">
-                        {service.desc}
-                      </p>
-                    </motion.div>
-                  </div>
-                  
-                  <motion.div
-                    animate={{ 
-                      x: hoveredIdx === idx ? 0 : -10,
-                      opacity: hoveredIdx === idx ? 1 : 0 
-                    }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <ArrowUpRight size={24} className="text-[#101010]" />
-                  </motion.div>
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-
-        {/* Bottom tagline */}
-        <motion.p
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-          viewport={{ once: true }}
-          className="mt-16 font-serif italic text-xl text-slate-400 max-w-lg"
-        >
-          每個案子都是一支作品——從概念、燈光到交付，一起設計。
-        </motion.p>
+      <div className="mt-12 space-y-4">
+        {renderRow(rowA)}
+        {renderRow(rowB, true)}
       </div>
-    </section>
-  );
-};
 
-export default function App() {
-  useSEO({
-    title: 'Harry Heng Studio｜高雄攝影工作室 · 形象照 · 婚紗照 · 藝術照 · 閨密寫真 · 全家福',
-    description: 'Harry Heng Studio 謝典恆攝影工作室，位於高雄，專營形象照、婚紗攝影、藝術照、閨密寫真、全家福、寵物攝影、崑曲藝術攝影及舞蹈劇場紀錄。以光影詮釋每一個值得被記住的瞬間。',
-    keywords: '高雄攝影,攝影工作室,形象照,婚紗照,婚紗攝影,藝術照,閨密寫真,全家福,寵物攝影,高雄婚紗,高雄形象照,崑曲攝影,舞蹈攝影,高雄攝影師,Harry Heng,謝典恆',
-    canonical: 'https://harryheng.studio/',
-  });
+      <div className="mx-auto mt-10 flex max-w-7xl flex-wrap items-center justify-between gap-4 px-5 lg:px-8">
+        <a href="#work" className="inline-flex items-center gap-2 text-sm font-semibold text-white hover:text-white/70">
+          <ImageIcon size={18} />
+          <span>看完整作品</span>
+        </a>
+        <a
+          href={INSTAGRAM_URL}
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex items-center gap-2 text-sm font-semibold text-white/72 hover:text-white"
+        >
+          <Instagram size={18} />
+          <span>@harrytwstudio</span>
+        </a>
+      </div>
 
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-  const { content, projects: contentProjects } = useContent();
-  const projects = contentProjects?.length ? contentProjects : PROJECTS;
-  const currentYear = useMemo(() => new Date().getFullYear(), []);
-  const showLabels = useMemo(() => {
-    try {
-      return new URLSearchParams(window.location.search).get('labels') === '1';
-    } catch {
-      return false;
-    }
-  }, []);
-
-  const heroCoverSrc = content?.assets?.heroCover || '/images/hero-cover.jpg';
-
-  const lightingEnabled = content?.features?.lighting !== false;
-  const adminEnabled = content?.features?.admin === true;
-  const worksArchiveStart = content?.site?.worksArchiveStart ?? 2016;
-  
-  return (
-    <div className="bg-[#F5F5F3] selection:bg-black selection:text-white">
-      <CustomCursor />
-
-      <AnimatePresence>
-        {selectedProject && (
-          <ProjectCaseStudy project={selectedProject} onBack={() => setSelectedProject(null)} />
-        )}
-      </AnimatePresence>
-
-      <main>
-        {/* ===== HERO SECTION: Vogue Editorial × Cyberpunk ===== */}
-        <section className="h-screen w-full relative overflow-hidden bg-[#101010]">
-          {showLabels && <DebugLabel text={`HERO_COVER: ${heroCoverSrc}`} />}
-          
-          {/* Background Image with Slow Zoom Out */}
-          <motion.div
-            className="absolute inset-0 z-0"
-            initial={{ scale: 1.15 }}
-            animate={{ scale: 1 }}
-            transition={{ duration: 8, ease: "easeOut" }}
-          >
-            <img 
-              src={heroCoverSrc}
-              alt="Cover"
-              className="w-full h-full object-cover"
-            />
-            {/* Subtle dark overlay to ensure text readability */}
-            <div className="absolute inset-0 bg-black/30" />
-          </motion.div>
-
-          {/* Four Corner Navigation */}
-          {/* Top-Left: Logo */}
-          <motion.div
-            className="absolute top-8 left-8 lg:top-12 lg:left-12 z-20"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 0.8 }}
-          >
-            <MagneticButton className="pointer-events-auto">
-              <a href="#/" data-cursor="首頁" className="font-display text-white text-xl lg:text-2xl tracking-wide">
-                Harry Heng<span className="text-white/40">.</span>
-              </a>
-            </MagneticButton>
-          </motion.div>
-
-          {/* Top-Right: Menu */}
-          <motion.div
-            className="absolute top-8 right-8 lg:top-12 lg:right-12 z-20"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6, duration: 0.8 }}
-          >
-            <div className="flex gap-6 lg:gap-10 font-mono text-[9px] lg:text-[10px] text-white/80 uppercase tracking-[0.25em]">
-              <MagneticButton><a href="#work" data-cursor="瀏覽" className="hover:text-white transition-colors">Works</a></MagneticButton>
-              <MagneticButton><a href="#/wedding" data-cursor="婚攝" className="hover:text-white transition-colors">Wedding</a></MagneticButton>
-              <MagneticButton><a href="#/kunqu" data-cursor="崑曲" className="hover:text-white transition-colors">Kunqu</a></MagneticButton>
-              <MagneticButton><a href="#/intimacy" data-cursor="親密" className="hover:text-white transition-colors">Intimacy</a></MagneticButton>
-              <MagneticButton><a href="#about" data-cursor="了解" className="hover:text-white transition-colors">About</a></MagneticButton>
-              <MagneticButton><a href="#contact" data-cursor="聯繫" className="hover:text-white transition-colors">Contact</a></MagneticButton>
-              {lightingEnabled && <MagneticButton><a href="#/lighting" data-cursor="燈光" className="hover:text-white transition-colors">Light</a></MagneticButton>}
-              {adminEnabled && <MagneticButton><a href="#/admin" data-cursor="管理" className="hover:text-white transition-colors">Admin</a></MagneticButton>}
-            </div>
-          </motion.div>
-
-          {/* Bottom-Left: Location */}
-          <motion.div
-            className="absolute bottom-8 left-8 lg:bottom-12 lg:left-12 z-20"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.5, duration: 0.8 }}
-          >
-            <span className="font-mono text-[10px] text-white/60 uppercase tracking-[0.3em]">
-              Kaohsiung · Since 2016
-            </span>
-          </motion.div>
-
-          {/* Bottom-Right: Scroll Indicator */}
-          <motion.div
-            className="absolute bottom-8 right-8 lg:bottom-12 lg:right-12 z-20 flex items-center gap-4"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.6, duration: 0.8 }}
-          >
-            <motion.div
-              animate={{ y: [0, 8, 0] }}
-              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-              className="flex items-center gap-3"
-            >
-              <div className="w-12 lg:w-16 h-px bg-white/40" />
-              <span className="font-mono text-[10px] text-white/60 uppercase tracking-widest">Scroll</span>
-            </motion.div>
-          </motion.div>
-
-          {/* Center: Massive Hollow Outline Name */}
-          <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
-            <motion.div
-              className="text-center"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.3, duration: 1 }}
-            >
-              {/* Tagline above */}
-              <motion.p
-                className="font-mono text-[10px] lg:text-xs text-white/50 uppercase tracking-[0.5em] mb-8"
-                initial={{ opacity: 0, filter: "blur(10px)" }}
-                animate={{ opacity: 1, filter: "blur(0px)" }}
-                transition={{ delay: 0.8, duration: 1 }}
-              >
-                Capturing the calm between light and soul
-              </motion.p>
-
-              {/* Hollow Outline Text - HARRY */}
-              <motion.h1
-                className="font-display text-[18vw] lg:text-[16vw] leading-[0.85] tracking-[0.02em] uppercase"
-                style={{
-                  color: 'transparent',
-                  WebkitTextStroke: '1px rgba(255,255,255,0.7)',
-                  textShadow: '0 0 60px rgba(255,255,255,0.1)'
-                }}
-                initial={{ opacity: 0, filter: "blur(20px)", y: 30 }}
-                animate={{ opacity: 1, filter: "blur(0px)", y: 0 }}
-                transition={{ delay: 0.4, duration: 1.2, ease: [0.25, 0.46, 0.45, 0.94] }}
-              >
-                Harry
-              </motion.h1>
-
-              {/* Solid Text - HENG (contrast) */}
-              <motion.h1
-                className="font-display text-[18vw] lg:text-[16vw] leading-[0.85] tracking-[0.02em] uppercase text-white/90"
-                style={{
-                  mixBlendMode: 'overlay'
-                }}
-                initial={{ opacity: 0, filter: "blur(20px)", y: 30 }}
-                animate={{ opacity: 1, filter: "blur(0px)", y: 0 }}
-                transition={{ delay: 0.6, duration: 1.2, ease: [0.25, 0.46, 0.45, 0.94] }}
-              >
-                Heng
-              </motion.h1>
-
-              {/* Subtitle below */}
-              <motion.p
-                className="mt-8 font-serif italic text-lg lg:text-2xl text-white/60 max-w-md mx-auto"
-                initial={{ opacity: 0, filter: "blur(10px)" }}
-                animate={{ opacity: 1, filter: "blur(0px)" }}
-                transition={{ delay: 1.2, duration: 1 }}
-              >
-                光灑下的瞬間，真實與優雅共存。
-              </motion.p>
-            </motion.div>
-          </div>
-        </section>
-
-        {/* About Section */}
-        <section id="about" className="min-h-screen grid grid-cols-1 lg:grid-cols-2 gap-0 border-b border-black">
-           <div className="border-r border-black p-8 lg:p-24 flex flex-col justify-between bg-white">
-              <motion.span 
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                className="font-mono text-xs uppercase tracking-widest text-slate-400"
-              >
-                品牌宣言
-              </motion.span>
-              <div>
-                 <motion.h2 
-                   initial={{ opacity: 0, y: 50 }}
-                   whileInView={{ opacity: 1, y: 0 }}
-                   transition={{ duration: 0.8 }}
-                   viewport={{ once: true }}
-                   className="font-serif text-4xl lg:text-6xl italic leading-tight mb-12"
-                 >
-                   "在 Harry 的鏡頭下，
-                   <br />
-                   我重新看見最<span className="not-italic font-sans font-black uppercase">自然</span>的自己。"
-                 </motion.h2>
-                 <motion.p 
-                   initial={{ opacity: 0, y: 30 }}
-                   whileInView={{ opacity: 1, y: 0 }}
-                   transition={{ duration: 0.6, delay: 0.2 }}
-                   viewport={{ once: true }}
-                   className="font-sans text-sm leading-relaxed max-w-md text-slate-600"
-                 >
-                    攝影師謝典恆，自2016年起累積超過八年的攝影經驗，
-                    專注於以鏡頭捕捉人物與環境之間的深層連結。
-                    作品風格強調情感與氛圍，善於刻畫瞬間的動人細節。
-                 </motion.p>
-              </div>
-              <motion.div 
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                transition={{ delay: 0.4 }}
-                viewport={{ once: true }}
-                className="flex items-center gap-8 mt-12"
-              >
-                 <Globe size={24} className="animate-spin-slow" />
-                 <span className="font-mono text-[10px] uppercase tracking-widest">服務全球</span>
-              </motion.div>
-           </div>
-           <div className="relative overflow-hidden">
-              <motion.div
-                initial={{ scale: 1.2, opacity: 0 }}
-                whileInView={{ scale: 1, opacity: 1 }}
-                transition={{ duration: 1 }}
-                viewport={{ once: true }}
-                className="h-full"
-              >
-                {showLabels && <DebugLabel text={`ABOUT_IMG: /images/about-portrait.jpg`} />}
-                <DistortionImage 
-                  src="/images/about-portrait.jpg" 
-                  alt="形象攝影" 
-                  className="h-full w-full grayscale hover:grayscale-0 transition-all duration-1000" 
-                />
-              </motion.div>
-              <motion.div 
-                className="absolute top-12 left-12 text-white mix-blend-difference"
-                initial={{ opacity: 0, x: -30 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.3 }}
-                viewport={{ once: true }}
-              >
-                 {/* Subtle backdrop for readability on light backgrounds */}
-                 <div className="absolute -inset-6 bg-gradient-to-br from-black/20 via-transparent to-transparent rounded-2xl blur-xl -z-10" />
-                 <div className="font-mono text-[10px] uppercase tracking-[0.6em] text-white/70" style={{ textShadow: '0 2px 10px rgba(0,0,0,0.3)' }}>
-                   About Portrait
-                 </div>
-                 <div className="mt-4">
-                   <div
-                     className="font-display uppercase leading-[0.82]"
-                     style={{
-                       color: 'transparent',
-                       WebkitTextStroke: '1px rgba(255,255,255,0.85)',
-                       letterSpacing: '0.06em',
-                       textShadow: '0 0 40px rgba(255,255,255,0.08), 0 4px 20px rgba(0,0,0,0.2)'
-                     }}
-                   >
-                     <div className="text-[12vw] sm:text-[9vw] lg:text-6xl">Fashion</div>
-                     <div className="text-[12vw] sm:text-[9vw] lg:text-6xl">Portrait</div>
-                   </div>
-                 </div>
-              </motion.div>
-           </div>
-        </section>
-
-        {/* Services */}
-        <ServicesSection />
-
-        {/* Instagram-Style Gallery Wall */}
-        <InstagramGalleryWall />
-
-        {/* Featured Work Grid */}
-        <FeaturedWorkGrid projects={projects} />
-
-        {/* Portfolio List */}
-        <InteractivePortfolioList
-          projects={projects}
-          onSelect={setSelectedProject}
-          archiveStartYear={worksArchiveStart}
-          archiveEndYear={currentYear}
-        />
-
-        {/* Stats */}
-        <StatsSection />
-
-        {/* Process Section */}
-        <section className="py-48 px-8 lg:px-24 bg-white relative overflow-hidden">
-           <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
-              <div className="md:col-span-5 md:col-start-2">
-                 <motion.span 
-                   initial={{ opacity: 0 }}
-                   whileInView={{ opacity: 1 }}
-                   viewport={{ once: true }}
-                   className="font-mono text-[10px] uppercase tracking-widest text-slate-400 mb-8 block"
-                 >
-                   創作流程
-                 </motion.span>
-                 <motion.h3 
-                   initial={{ opacity: 0, y: 30 }}
-                   whileInView={{ opacity: 1, y: 0 }}
-                   viewport={{ once: true }}
-                   className="font-serif text-4xl lg:text-5xl italic mb-12"
-                 >
-                   眼睛先傾聽，再去觀看。
-                 </motion.h3>
-                 <motion.div 
-                   initial={{ opacity: 0, y: 30 }}
-                   whileInView={{ opacity: 1, y: 0 }}
-                   transition={{ delay: 0.2 }}
-                   viewport={{ once: true }}
-                   className="aspect-[4/5] bg-slate-100 overflow-hidden mb-12 rounded-3xl"
-                 >
-                    {showLabels && <DebugLabel text={`PROCESS1_IMG: /images/process-01.jpg`} />}
-                    <DistortionImage 
-                      src="/images/process-01.jpg" 
-                      alt="牡丹亭" 
-                      className="h-full w-full" 
-                    />
-                 </motion.div>
-              </div>
-              <div className="md:col-span-4 md:col-start-8 md:mt-48">
-                 <motion.p 
-                   initial={{ opacity: 0, y: 30 }}
-                   whileInView={{ opacity: 1, y: 0 }}
-                   viewport={{ once: true }}
-                   className="font-sans text-xs uppercase tracking-widest leading-loose text-slate-500 mb-12"
-                 >
-                   攝影啟蒙始於與無垢舞蹈劇場首席舞者鄭傑文老師的合作，
-                   聚焦於舞台劇照與風格人像攝影，透過鏡頭將觀者引入每個故事的核心。
-                 </motion.p>
-                 <motion.div 
-                   initial={{ opacity: 0, scale: 0.9 }}
-                   whileInView={{ opacity: 1, scale: 1 }}
-                   transition={{ delay: 0.2 }}
-                   viewport={{ once: true }}
-                   className="aspect-square bg-slate-100 overflow-hidden rounded-3xl"
-                 >
-                    {showLabels && <DebugLabel text={`PROCESS2_IMG: /images/process-02.jpg`} />}
-                    <DistortionImage 
-                      src="/images/process-02.jpg" 
-                      alt="紅樓詩社" 
-                      className="w-full h-full" 
-                    />
-                 </motion.div>
-              </div>
-           </div>
-           
-           {/* Vertical Marquee */}
-           <div className="absolute right-8 top-0 h-full hidden lg:flex flex-col justify-center gap-12 pointer-events-none">
-              <motion.span 
-                animate={{ y: [0, -50, 0] }}
-                transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-                className="font-sans font-black text-8xl uppercase tracking-tighter vertical-text opacity-5"
-              >
-                EDITORIAL
-              </motion.span>
-              <motion.span 
-                animate={{ y: [0, 50, 0] }}
-                transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
-                className="font-sans font-black text-8xl uppercase tracking-tighter vertical-text opacity-5"
-              >
-                FASHION
-              </motion.span>
-           </div>
-        </section>
-
-        {/* Contact Footer */}
-        <footer id="contact" className="min-h-screen bg-black text-white flex flex-col justify-between p-8 lg:p-24 relative overflow-hidden">
-           <FloatingParticles />
-           
-           <div className="relative z-10">
-              <motion.span 
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="font-mono text-xs uppercase tracking-[0.8em] text-slate-500 mb-24 block"
-              >
-                開始對話
-              </motion.span>
-              <div className="group overflow-hidden">
-                 <MagneticButton strength={0.1}>
-                   <a 
-                     href="mailto:apple72899@gmail.com" 
-                     data-cursor="發送"
-                     className="font-sans font-black text-[10vw] lg:text-[12vw] uppercase leading-none tracking-tighter hover:italic transition-all inline-block"
-                   >
-                     <StaggerText text="聯繫我們" />
-                   </a>
-                 </MagneticButton>
-              </div>
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                viewport={{ once: true }}
-                className="font-serif italic text-xl lg:text-2xl text-white/60 mt-12 max-w-lg"
-              >
-                讓我們用鏡頭，替你留下一段
-                只屬於你的光影故事。
-              </motion.p>
-           </div>
-           
-           <motion.div 
-             initial={{ opacity: 0, y: 30 }}
-             whileInView={{ opacity: 1, y: 0 }}
-             transition={{ delay: 0.4 }}
-             viewport={{ once: true }}
-             className="relative z-10 flex flex-col md:flex-row justify-between items-end gap-12"
-           >
-              <div className="flex gap-16 font-mono text-[10px] uppercase tracking-widest">
-                 <MagneticButton><a href="https://www.instagram.com/harrytwstudio" target="_blank" className="hover:text-slate-400 transition-colors">Instagram</a></MagneticButton>
-                 <MagneticButton><a href="https://lin.ee/mnwrpoI" target="_blank" className="hover:text-slate-400 transition-colors">LINE</a></MagneticButton>
-                 <MagneticButton><a href="https://www.facebook.com/harry7797" target="_blank" className="hover:text-slate-400 transition-colors">Facebook</a></MagneticButton>
-              </div>
-              <div className="text-right">
-                  <p className="font-mono text-[10px] uppercase tracking-widest text-slate-500">© {currentYear} Harry Heng Studio</p>
-                 <p className="font-sans font-black text-xl mt-2 tracking-tighter">版權所有</p>
-              </div>
-           </motion.div>
-
-           {/* Background Gradient */}
-           <motion.div 
-             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-white/5 rounded-full blur-[150px] pointer-events-none"
-             animate={{ scale: [1, 1.2, 1], opacity: [0.05, 0.1, 0.05] }}
-             transition={{ duration: 8, repeat: Infinity }}
-           />
-        </footer>
-      </main>
-      
       <style>{`
-        .vertical-text {
-          writing-mode: vertical-rl;
-          transform: rotate(180deg);
-        }
-        @keyframes spin-slow {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-        .animate-spin-slow {
-          animation: spin-slow 12s linear infinite;
-        }
-        @keyframes float {
-          0%, 100% { transform: translateY(0); opacity: 0.2; }
-          50% { transform: translateY(-50px); opacity: 0.5; }
-        }
-        .animate-float {
-          animation: float 15s ease-in-out infinite;
+        @keyframes fashion-scroll {
+          from { transform: translateX(0); }
+          to { transform: translateX(-50%); }
         }
 
-        .img-placeholder {
-          opacity: 1;
-          transition: opacity 500ms ease;
+        .fashion-marquee {
+          animation: fashion-scroll 48s linear infinite;
+          will-change: transform;
         }
-        .img-loaded .img-placeholder {
-          opacity: 0;
+
+        .fashion-marquee-reverse {
+          animation-direction: reverse;
+          animation-duration: 56s;
         }
-        .img-reveal {
-          opacity: 0;
-          transform: translateY(24px) scale(1.03);
-          filter: blur(4px);
-          transition: 
-            opacity 800ms cubic-bezier(0.25, 0.46, 0.45, 0.94), 
-            transform 900ms cubic-bezier(0.165, 0.84, 0.44, 1),
-            filter 700ms ease-out;
-          will-change: opacity, transform, filter;
-        }
-        .img-reveal--loaded {
-          opacity: 1;
-          transform: translateY(0) scale(1);
-          filter: blur(0);
-        }
+
         @media (prefers-reduced-motion: reduce) {
-          .img-reveal {
-            opacity: 1;
-            transform: none;
-            transition: none;
+          .fashion-marquee {
+            animation: none;
+            transform: translateX(0);
           }
         }
       `}</style>
+    </section>
+  );
+}
+
+function ServicesSection() {
+  const services: Array<{ title: string; body: string; href: string; icon: IconType }> = [
+    {
+      title: '形象照與個人品牌',
+      body: '履歷、品牌頁面、講師介紹、創作者與社群頭像。拍出清楚、可信、帶有個人溫度的第一印象。',
+      href: '#work',
+      icon: Camera,
+    },
+    {
+      title: '婚紗與婚禮紀錄',
+      body: '從婚紗、訂婚到婚禮當天，保留關係裡最真實的動作、眼神與當天氛圍。',
+      href: '/wedding',
+      icon: Heart,
+    },
+    {
+      title: '閨密、全家福、寵物寫真',
+      body: '適合朋友、家人與重要陪伴一起拍攝。氛圍輕鬆，畫面乾淨，不過度擺拍。',
+      href: '/intimacy',
+      icon: Users,
+    },
+    {
+      title: '崑曲與表演藝術',
+      body: '熟悉舞台光與動態瞬間，適合劇照、宣傳照、演出紀錄與藝術家形象素材。',
+      href: '/kunqu',
+      icon: Sparkles,
+    },
+  ];
+
+  return (
+    <section id="services" className="bg-white px-5 py-24 lg:px-8">
+      <div className="mx-auto max-w-7xl">
+        <div className="max-w-3xl">
+          <SectionLabel>Services</SectionLabel>
+          <h2 className="mt-4 text-4xl font-bold leading-tight text-stone-950 md:text-5xl">
+            不是只拍漂亮照片，而是幫你留下「值得被相信」的影像。
+          </h2>
+          <p className="mt-5 text-base leading-8 text-stone-600">
+            你可以從想留下的關係與影像氣質開始選擇：專業形象、婚禮記憶、家人陪伴，或舞台上最有力量的一瞬。
+          </p>
+        </div>
+
+        <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+          {services.map((service) => {
+            const Icon = service.icon;
+            return (
+              <a
+                key={service.title}
+                href={service.href}
+                className="group rounded-lg border border-stone-200 bg-[#FBFAF7] p-6 transition-colors hover:border-stone-950 hover:bg-white"
+              >
+                <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-stone-950 text-white">
+                  <Icon size={20} />
+                </div>
+                <h3 className="mt-6 text-xl font-semibold text-stone-950">{service.title}</h3>
+                <p className="mt-4 text-sm leading-7 text-stone-600">{service.body}</p>
+                <div className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-stone-950">
+                  <span>查看服務</span>
+                  <ArrowUpRight size={17} className="transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+                </div>
+              </a>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function AboutSection() {
+  const points = [
+    '2016 年起累積人像、婚紗、表演藝術與劇場紀錄拍攝經驗',
+    '拍攝前協助整理服裝方向、場景與視覺氣質',
+    '拍攝現場提供姿勢與表情引導，讓不常拍照的人也能放鬆',
+  ];
+
+  return (
+    <section className="bg-[#111111] px-5 py-24 text-white lg:px-8">
+      <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
+        <div className="overflow-hidden rounded-lg bg-stone-900">
+          <img
+            src="/images/about-portrait.jpg"
+            alt="攝影師謝典恆工作肖像"
+            className="h-full min-h-[460px] w-full object-cover"
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
+        <div>
+          <SectionLabel light>About Harry</SectionLabel>
+          <h2 className="mt-4 text-4xl font-bold leading-tight md:text-5xl">
+            讓人看起來有質感，也讓那個人仍然像自己。
+          </h2>
+          <p className="mt-6 max-w-2xl text-base leading-8 text-white/70">
+            Harry Heng Studio 專注在乾淨、安定、帶有故事感的影像。無論是需要建立專業形象、留下婚禮紀念，或替表演藝術保留舞台瞬間，核心都是同一件事：把人與情緒拍得可信。
+          </p>
+          <div className="mt-8 grid gap-4">
+            {points.map((point) => (
+              <div key={point} className="flex gap-3 text-sm leading-7 text-white/75">
+                <CheckCircle2 className="mt-1 shrink-0 text-white" size={18} />
+                <span>{point}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function PortfolioSection({ projects, onSelect }: { projects: Project[]; onSelect: (project: Project) => void }) {
+  return (
+    <section id="work" className="bg-[#F7F4EF] px-5 py-24 lg:px-8">
+      <div className="mx-auto max-w-7xl">
+        <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
+          <div className="max-w-3xl">
+            <SectionLabel>Portfolio</SectionLabel>
+            <h2 className="mt-4 text-4xl font-bold leading-tight text-stone-950 md:text-5xl">
+              讓光線、表情與關係先替照片說話。
+            </h2>
+          </div>
+          <IconButton href={INSTAGRAM_URL} icon={Instagram}>更多即時作品</IconButton>
+        </div>
+
+        <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+          {projects.map((project, index) => (
+            <button
+              key={project.id}
+              type="button"
+              onClick={() => onSelect(project)}
+              className={`group relative overflow-hidden rounded-lg bg-stone-200 text-left ${index === 0 ? 'md:col-span-2 md:row-span-2' : ''}`}
+            >
+              <img
+                src={project.imageUrl}
+                alt={project.title}
+                className={`${index === 0 ? 'h-[560px]' : 'h-[270px]'} w-full object-cover transition-transform duration-700 group-hover:scale-105`}
+                loading="lazy"
+                decoding="async"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+              <div className="absolute inset-x-0 bottom-0 p-5 text-white">
+                <p className="font-mono text-[11px] uppercase tracking-widest text-white/70">
+                  {CATEGORY_VALUE_TO_LABEL[project.category]}
+                </p>
+                <h3 className="mt-2 text-lg font-semibold leading-7">{project.title}</h3>
+              </div>
+              <div className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-lg bg-white/90 text-black opacity-0 transition-opacity group-hover:opacity-100">
+                <ArrowUpRight size={17} />
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ProcessSection() {
+  const steps = [
+    { title: '確認想法', body: '先聊想拍的類型、預算、時間與你期待的影像感。', icon: MessageCircle },
+    { title: '企劃準備', body: '提供服裝、場景、妝髮、拍攝節奏與參考方向建議。', icon: CalendarDays },
+    { title: '拍攝引導', body: '現場協助表情、姿勢與走位，不需要自己硬想動作。', icon: Aperture },
+    { title: '精修交付', body: '依方案提供挑片、調色與精修，產出可直接使用的影像。', icon: CheckCircle2 },
+  ];
+
+  return (
+    <section id="process" className="bg-white px-5 py-24 lg:px-8">
+      <div className="mx-auto max-w-7xl">
+        <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr]">
+          <div>
+            <SectionLabel>Process</SectionLabel>
+            <h2 className="mt-4 text-4xl font-bold leading-tight text-stone-950 md:text-5xl">
+              拍攝前把細節想清楚，拍攝當天就能把注意力放回自己和重要的人身上。
+            </h2>
+          </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            {steps.map((step, index) => {
+              const Icon = step.icon;
+              return (
+                <div key={step.title} className="rounded-lg border border-stone-200 p-6">
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-stone-950 text-white">
+                      <Icon size={19} />
+                    </div>
+                    <span className="font-mono text-sm text-stone-400">{String(index + 1).padStart(2, '0')}</span>
+                  </div>
+                  <h3 className="mt-6 text-xl font-semibold text-stone-950">{step.title}</h3>
+                  <p className="mt-3 text-sm leading-7 text-stone-600">{step.body}</p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function InquirySection() {
+  const items = ['形象照', '婚紗婚禮', '閨密寫真', '全家福', '寵物寫真', '崑曲劇照', '舞蹈劇場', '品牌影像'];
+
+  return (
+    <footer id="contact" className="bg-black px-5 py-20 text-white lg:px-8">
+      <div className="mx-auto max-w-7xl">
+        <div className="grid gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
+          <div>
+            <SectionLabel light>Booking</SectionLabel>
+            <h2 className="mt-4 text-4xl font-bold leading-tight md:text-6xl">
+              想拍一組讓重要的人，或未來的自己，都想多看幾眼的照片？
+            </h2>
+            <p className="mt-6 max-w-2xl text-base leading-8 text-white/70">
+              傳 LINE 或 Email 說明想拍的類型、預計月份與地點。若還沒有明確想法，也可以先從一段簡單討論開始。
+            </p>
+            <div className="mt-9 flex flex-wrap gap-3">
+              <IconButton href={LINE_URL} icon={MessageCircle} variant="light">LINE 詢問檔期</IconButton>
+              <IconButton href={`mailto:${EMAIL}`} icon={Mail} variant="outline">Email 聯絡</IconButton>
+            </div>
+          </div>
+          <div>
+            <div className="flex flex-wrap gap-2">
+              {items.map((item) => (
+                <span key={item} className="rounded-lg border border-white/15 px-3 py-2 text-sm text-white/70">
+                  {item}
+                </span>
+              ))}
+            </div>
+            <div className="mt-8 flex flex-wrap gap-5 text-sm text-white/60">
+              <a href={INSTAGRAM_URL} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 hover:text-white">
+                <Instagram size={17} />
+                Instagram
+              </a>
+              <a href={FACEBOOK_URL} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 hover:text-white">
+                <ArrowUpRight size={17} />
+                Facebook
+              </a>
+              <span className="inline-flex items-center gap-2">
+                <MapPin size={17} />
+                Kaohsiung, Taiwan
+              </span>
+            </div>
+          </div>
+        </div>
+        <p className="mt-16 border-t border-white/10 pt-6 text-sm text-white/40">
+          © {new Date().getFullYear()} Harry Heng Studio. Photography by 謝典恆.
+        </p>
+      </div>
+    </footer>
+  );
+}
+
+function ProjectModal({ project, onClose }: { project: Project; onClose: () => void }) {
+  return (
+    <motion.div
+      className="fixed inset-0 z-[70] bg-black/80 p-4 text-white backdrop-blur-sm"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      role="dialog"
+      aria-modal="true"
+    >
+      <button
+        type="button"
+        onClick={onClose}
+        className="absolute right-5 top-5 z-10 inline-flex h-11 w-11 items-center justify-center rounded-lg bg-white text-black"
+        aria-label="關閉作品預覽"
+      >
+        <X size={20} />
+      </button>
+      <div className="mx-auto flex h-full max-w-6xl items-center">
+        <div className="grid max-h-[92vh] w-full overflow-hidden rounded-lg bg-[#111] lg:grid-cols-[1.2fr_0.8fr]">
+          <img src={project.imageUrl} alt={project.title} className="h-[60vh] w-full object-cover lg:h-[92vh]" />
+          <div className="flex flex-col justify-between gap-8 p-7 lg:p-10">
+            <div>
+              <p className="font-mono text-[11px] uppercase tracking-widest text-white/50">
+                {CATEGORY_VALUE_TO_LABEL[project.category]}
+              </p>
+              <h3 className="mt-4 text-3xl font-bold leading-tight">{project.title}</h3>
+              <p className="mt-5 text-sm leading-7 text-white/70">
+                如果你喜歡這樣的光線、情緒與構圖，詢問時可以直接截圖或告訴我作品名稱，我會依照你的狀態與拍攝情境一起調整。
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <IconButton href={LINE_URL} icon={MessageCircle} variant="light">用 LINE 詢問</IconButton>
+              <button
+                type="button"
+                onClick={onClose}
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-white/20 px-5 py-3 text-sm font-semibold text-white hover:bg-white/10"
+              >
+                <ArrowRight size={18} />
+                <span>繼續看作品</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+export default function App() {
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const { content, projects: contentProjects } = useContent();
+  const projects = useMemo(() => (contentProjects?.length ? contentProjects : PROJECTS), [contentProjects]);
+  const heroCover = content?.assets?.heroCover || '/images/optimized/hero-cover.webp';
+  const lightingEnabled = content?.features?.lighting !== false;
+  const adminEnabled = content?.features?.admin === true;
+
+  useEffect(() => {
+    const scrollToHash = () => {
+      const hash = window.location.hash;
+      if (!hash || hash.startsWith('#/')) return;
+      const target = document.getElementById(hash.slice(1));
+      if (target) target.scrollIntoView({ block: 'start' });
+    };
+
+    const timeout = window.setTimeout(scrollToHash, 50);
+    window.addEventListener('hashchange', scrollToHash);
+    return () => {
+      window.clearTimeout(timeout);
+      window.removeEventListener('hashchange', scrollToHash);
+    };
+  }, []);
+
+  useSEO({
+    title: 'Harry Heng Studio｜高雄攝影師謝典恆｜形象照、婚紗、全家福、藝術攝影',
+    description:
+      'Harry Heng Studio 謝典恆攝影工作室位於高雄，提供形象照、個人品牌照、婚紗婚禮、閨密寫真、全家福、寵物寫真、崑曲與舞蹈劇場紀錄。以乾淨光影與自然引導拍出值得信任的影像。',
+    keywords:
+      '高雄攝影師,高雄攝影工作室,形象照,個人品牌照,婚紗攝影,婚禮紀錄,全家福,閨密寫真,寵物攝影,崑曲攝影,劇場攝影,Harry Heng,謝典恆',
+    canonical: 'https://harryheng.studio/',
+    jsonLd: {
+      '@context': 'https://schema.org',
+      '@type': ['LocalBusiness', 'PhotographyBusiness'],
+      '@id': 'https://harryheng.studio/#business',
+      name: 'Harry Heng Studio 謝典恆攝影工作室',
+      alternateName: ['Harry Heng Photography', 'HENGSTUDIO', '謝典恆攝影'],
+      url: 'https://harryheng.studio/',
+      image: 'https://harryheng.studio/images/optimized/hero-og.jpg',
+      email: EMAIL,
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: '高雄市',
+        addressCountry: 'TW',
+      },
+      areaServed: ['高雄', '台灣'],
+      priceRange: '$$',
+      description:
+        '高雄攝影工作室，提供形象照、婚紗婚禮、家庭寫真、寵物寫真、崑曲藝術攝影與舞蹈劇場紀錄。',
+      sameAs: [INSTAGRAM_URL, FACEBOOK_URL],
+      makesOffer: [
+        { '@type': 'Offer', itemOffered: { '@type': 'Service', name: '形象照與個人品牌攝影' } },
+        { '@type': 'Offer', itemOffered: { '@type': 'Service', name: '婚紗攝影與婚禮紀錄' } },
+        { '@type': 'Offer', itemOffered: { '@type': 'Service', name: '全家福與親密寫真' } },
+        { '@type': 'Offer', itemOffered: { '@type': 'Service', name: '崑曲與表演藝術攝影' } },
+      ],
+    },
+  });
+
+  return (
+    <div className="min-h-screen overflow-x-hidden bg-[#F7F4EF] text-stone-950 selection:bg-black selection:text-white">
+      <Header lightingEnabled={lightingEnabled} adminEnabled={adminEnabled} />
+      <main>
+        <Hero cover={heroCover} />
+        <FashionMomentumWall />
+        <TrustStrip />
+        <ServicesSection />
+        <AboutSection />
+        <PortfolioSection projects={projects.slice(0, 8)} onSelect={setSelectedProject} />
+        <ProcessSection />
+        <InquirySection />
+      </main>
+      <AnimatePresence>
+        {selectedProject && <ProjectModal project={selectedProject} onClose={() => setSelectedProject(null)} />}
+      </AnimatePresence>
     </div>
   );
 }

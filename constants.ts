@@ -1,101 +1,97 @@
-
 import { Project, StylingProject, Category } from './types';
 
-// Display labels (Chinese) for UI
-export const CATEGORIES: string[] = ['全部', '時尚', '婚紗', '戲曲', '舞蹈/劇場', '造型'];
+export const CATEGORIES: string[] = ['全部', '形象人像', '婚紗婚禮', '崑曲藝術', '舞蹈劇場', '造型影像'];
 
-// Actual Category values for data storage
 export const CATEGORY_VALUES: Category[] = ['Fashion', 'Wedding', 'Kunqu Opera', 'Dance/Theater', 'Styling'];
 
-// Mapping between Chinese labels and English Category values
 export const CATEGORY_LABEL_MAP: Record<string, Category> = {
-  '時尚': 'Fashion',
-  '婚紗': 'Wedding',
-  '戲曲': 'Kunqu Opera',
-  '舞蹈/劇場': 'Dance/Theater',
-  '造型': 'Styling'
+  '形象人像': 'Fashion',
+  '婚紗婚禮': 'Wedding',
+  '崑曲藝術': 'Kunqu Opera',
+  '舞蹈劇場': 'Dance/Theater',
+  '造型影像': 'Styling',
 };
 
 export const CATEGORY_VALUE_TO_LABEL: Record<Category, string> = {
-  'Fashion': '時尚',
-  'Wedding': '婚紗',
-  'Kunqu Opera': '戲曲',
-  'Dance/Theater': '舞蹈/劇場',
-  'Styling': '造型'
+  Fashion: '形象人像',
+  Wedding: '婚紗婚禮',
+  'Kunqu Opera': '崑曲藝術',
+  'Dance/Theater': '舞蹈劇場',
+  Styling: '造型影像',
 };
 
 export const PROJECTS: Project[] = [
   {
-    id: '1',
-    title: '專業時尚人像',
+    id: 'portrait-brand',
+    title: '形象照｜把專業感拍得自然',
     category: 'Fashion',
-    imageUrl: 'https://custom-images.strikinglycdn.com/res/hrscywv4p/image/upload/c_limit,fl_lossy,h_1440,w_720,f_auto,q_auto/14194393/988013_40225.jpg',
-    metadata: { iso: '100', aperture: 'f/2.8', shutter: '1/125', date: '2024年' }
+    imageUrl: '/images/projects/01.jpg',
+    metadata: { iso: '100', aperture: 'f/2.8', shutter: '1/160', date: 'Portrait' },
   },
   {
-    id: '5',
-    title: '婚禮紀錄',
+    id: 'wedding-vows',
+    title: '婚紗攝影｜城市裡的安靜承諾',
     category: 'Wedding',
-    imageUrl: 'https://custom-images.strikinglycdn.com/res/hrscywv4p/image/upload/c_limit,fl_lossy,h_9000,w_1200,f_auto,q_1/14194393/118649_641015.jpg',
-    metadata: { iso: '800', aperture: 'f/2.8', shutter: '1/250', date: '2021年' }
+    imageUrl: '/images/wedding/01.jpg',
+    metadata: { iso: '200', aperture: 'f/2.8', shutter: '1/250', date: 'Wedding' },
   },
   {
-    id: '4',
-    title: '層中隙',
-    category: 'Dance/Theater',
-    imageUrl: 'https://custom-images.strikinglycdn.com/res/hrscywv4p/image/upload/c_limit,fl_lossy,h_9000,w_1200,f_auto,q_1/14194393/403491_197820.jpeg',
-    metadata: { iso: '1600', aperture: 'f/2.0', shutter: '1/500', date: '2019年' }
+    id: 'wedding-day',
+    title: '婚禮紀錄｜留下那天真正的情緒',
+    category: 'Wedding',
+    imageUrl: '/images/wedding/089.jpg',
+    metadata: { iso: '400', aperture: 'f/2.0', shutter: '1/200', date: 'Wedding Day' },
   },
   {
-    id: '6',
-    title: '牡丹亭｜拾翠坊崑劇團',
+    id: 'kunqu-stage',
+    title: '崑曲藝術｜身段、眼神與舞台光',
     category: 'Kunqu Opera',
-    imageUrl: 'https://custom-images.strikinglycdn.com/res/hrscywv4p/image/upload/c_limit,fl_lossy,h_9000,w_1200,f_auto,q_1/14194393/218457_608677.jpeg',
-    metadata: { iso: '3200', aperture: 'f/2.8', shutter: '1/320', date: '2023年' }
+    imageUrl: '/images/kunqu/01.jpg',
+    metadata: { iso: '1600', aperture: 'f/2.8', shutter: '1/320', date: 'Kunqu' },
   },
   {
-    id: '7',
-    title: '孤獨國｜紅樓詩社',
+    id: 'dance-theater',
+    title: '劇場紀錄｜凝住動作最有力量的一秒',
     category: 'Dance/Theater',
-    imageUrl: 'https://custom-images.strikinglycdn.com/res/hrscywv4p/image/upload/c_limit,fl_lossy,h_9000,w_1200,f_auto,q_1/14194393/293362_692595.jpeg',
-    metadata: { iso: '1250', aperture: 'f/2.0', shutter: '1/400', date: '2019年' }
+    imageUrl: '/images/projects/05.jpg',
+    metadata: { iso: '1250', aperture: 'f/2.0', shutter: '1/400', date: 'Theater' },
   },
   {
-    id: '8',
-    title: '斷代｜公視文學劇場',
-    category: 'Dance/Theater',
-    imageUrl: 'https://custom-images.strikinglycdn.com/res/hrscywv4p/image/upload/c_limit,fl_lossy,h_9000,w_1200,f_auto,q_1/14194393/196455_796761.jpeg',
-    metadata: { iso: '1000', aperture: 'f/2.8', shutter: '1/200', date: '2017年' }
+    id: 'bestie',
+    title: '閨密寫真｜一起笑得很像自己的樣子',
+    category: 'Fashion',
+    imageUrl: '/images/intimacy/bestie/01.jpg',
+    metadata: { iso: '200', aperture: 'f/2.8', shutter: '1/160', date: 'Bestie' },
   },
   {
-    id: '9',
-    title: '第25小時｜臺北藝穗節',
-    category: 'Dance/Theater',
-    imageUrl: 'https://custom-images.strikinglycdn.com/res/hrscywv4p/image/upload/c_limit,fl_lossy,h_9000,w_1200,f_auto,q_1/14194393/340432_752026.png',
-    metadata: { iso: '2000', aperture: 'f/2.0', shutter: '1/250', date: '2018年' }
+    id: 'family',
+    title: '全家福｜把日常的溫度拍成紀念',
+    category: 'Fashion',
+    imageUrl: '/images/intimacy/family/02.jpg',
+    metadata: { iso: '400', aperture: 'f/4.0', shutter: '1/125', date: 'Family' },
   },
   {
-    id: '10',
-    title: '歡迎光臨自助吧',
-    category: 'Dance/Theater',
-    imageUrl: 'https://custom-images.strikinglycdn.com/res/hrscywv4p/image/upload/c_limit,fl_lossy,h_9000,w_1200,f_auto,q_1/14194393/753328_322375.jpeg',
-    metadata: { iso: '1600', aperture: 'f/2.8', shutter: '1/320', date: '2020年' }
-  }
+    id: 'styling-editorial',
+    title: '造型影像｜為品牌與個人建立視覺印象',
+    category: 'Styling',
+    imageUrl: '/images/projects/10.jpg',
+    metadata: { iso: '100', aperture: 'f/2.8', shutter: '1/200', date: 'Styling' },
+  },
 ];
 
 export const STYLING_PROJECTS: StylingProject[] = [
   {
     id: 's1',
-    title: '時尚人像',
-    beforeImg: 'https://custom-images.strikinglycdn.com/res/hrscywv4p/image/upload/c_limit,fl_lossy,h_9000,w_1920,f_auto,q_auto/14194393/523347_526287.jpeg',
-    afterImg: 'https://custom-images.strikinglycdn.com/res/hrscywv4p/image/upload/c_limit,fl_lossy,h_9000,w_1920,f_auto,q_auto/14194393/446346_443202.png',
-    description: '在光與空氣的縫隙間，留下屬於你的故事。'
+    title: '個人形象造型',
+    beforeImg: '/images/projects/01.jpg',
+    afterImg: '/images/projects/02.jpg',
+    description: '從服裝、姿態到光線方向，整理出清楚、自然、能被記住的專業形象。',
   },
   {
     id: 's2',
-    title: '形象寫真',
-    beforeImg: 'https://custom-images.strikinglycdn.com/res/hrscywv4p/image/upload/c_limit,fl_lossy,h_9000,w_1920,f_auto,q_auto/14194393/117722_665359.jpeg',
-    afterImg: 'https://custom-images.strikinglycdn.com/res/hrscywv4p/image/upload/c_limit,fl_lossy,h_9000,w_1920,f_auto,q_auto/14194393/75460_512901.jpeg',
-    description: '讓你的風格成為一種宣言，定格在光影之間。'
-  }
+    title: '品牌視覺企劃',
+    beforeImg: '/images/projects/03.jpg',
+    afterImg: '/images/projects/04.jpg',
+    description: '協助品牌把氛圍、人物與服務價值拍成可延伸到品牌頁面、社群與宣傳版面的影像。',
+  },
 ];

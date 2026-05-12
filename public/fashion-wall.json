@@ -1,0 +1,1010 @@
+[
+  {
+    "number": 1,
+    "sourceNumber": 50,
+    "src": "/images/fashion-wall/001.webp",
+    "original": "/images/IG%20portfolio/IMG_2036.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "cover",
+    "palette": {
+      "group": "white",
+      "hue": 11,
+      "lightness": 0.811,
+      "saturation": 0.091
+    }
+  },
+  {
+    "number": 2,
+    "sourceNumber": 109,
+    "src": "/images/fashion-wall/002.webp",
+    "original": "/images/IG%20portfolio/IMG_4070.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "cover",
+    "palette": {
+      "group": "white",
+      "hue": 232,
+      "lightness": 0.762,
+      "saturation": 0.184
+    }
+  },
+  {
+    "number": 3,
+    "sourceNumber": 45,
+    "src": "/images/fashion-wall/003.webp",
+    "original": "/images/IG%20portfolio/IMG_1797.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "cover",
+    "palette": {
+      "group": "white",
+      "hue": 16,
+      "lightness": 0.843,
+      "saturation": 0.191
+    }
+  },
+  {
+    "number": 4,
+    "sourceNumber": 101,
+    "src": "/images/fashion-wall/004.webp",
+    "original": "/images/IG%20portfolio/IMG_3627.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "cover",
+    "palette": {
+      "group": "white",
+      "hue": 23,
+      "lightness": 0.825,
+      "saturation": 0.275
+    }
+  },
+  {
+    "number": 5,
+    "sourceNumber": 139,
+    "src": "/images/fashion-wall/005.webp",
+    "original": "/images/IG%20portfolio/IMG_7567.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "cover",
+    "palette": {
+      "group": "white",
+      "hue": 17,
+      "lightness": 0.643,
+      "saturation": 0.173
+    }
+  },
+  {
+    "number": 6,
+    "sourceNumber": 69,
+    "src": "/images/fashion-wall/006.webp",
+    "original": "/images/IG%20portfolio/IMG_2085.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "cover",
+    "palette": {
+      "group": "white",
+      "hue": 39,
+      "lightness": 0.814,
+      "saturation": 0.364
+    }
+  },
+  {
+    "number": 7,
+    "sourceNumber": 140,
+    "src": "/images/fashion-wall/007.webp",
+    "original": "/images/IG%20portfolio/IMG_7608.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "cover",
+    "palette": {
+      "group": "white",
+      "hue": 33,
+      "lightness": 0.584,
+      "saturation": 0.339
+    }
+  },
+  {
+    "number": 8,
+    "sourceNumber": 102,
+    "src": "/images/fashion-wall/008.webp",
+    "original": "/images/IG%20portfolio/IMG_3633.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "cover",
+    "palette": {
+      "group": "white",
+      "hue": 19,
+      "lightness": 0.66,
+      "saturation": 0.108
+    }
+  },
+  {
+    "number": 9,
+    "sourceNumber": 137,
+    "src": "/images/fashion-wall/009.webp",
+    "original": "/images/IG%20portfolio/IMG_7565.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "cover",
+    "palette": {
+      "group": "white",
+      "hue": 17,
+      "lightness": 0.574,
+      "saturation": 0.174
+    }
+  },
+  {
+    "number": 10,
+    "sourceNumber": 138,
+    "src": "/images/fashion-wall/010.webp",
+    "original": "/images/IG%20portfolio/IMG_7566.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "cover",
+    "palette": {
+      "group": "white",
+      "hue": 16,
+      "lightness": 0.566,
+      "saturation": 0.179
+    }
+  },
+  {
+    "number": 11,
+    "sourceNumber": 142,
+    "src": "/images/fashion-wall/011.webp",
+    "original": "/images/IG%20portfolio/IMG_8375.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "contained",
+    "palette": {
+      "group": "white",
+      "hue": 23,
+      "lightness": 0.585,
+      "saturation": 0.197
+    }
+  },
+  {
+    "number": 12,
+    "sourceNumber": 37,
+    "src": "/images/fashion-wall/012.webp",
+    "original": "/images/IG%20portfolio/IMG_1475.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "contained",
+    "palette": {
+      "group": "white",
+      "hue": 20,
+      "lightness": 0.627,
+      "saturation": 0.203
+    }
+  },
+  {
+    "number": 13,
+    "sourceNumber": 24,
+    "src": "/images/fashion-wall/013.webp",
+    "original": "/images/IG%20portfolio/IMG_0863.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "cover",
+    "palette": {
+      "group": "white",
+      "hue": 22,
+      "lightness": 0.556,
+      "saturation": 0.137
+    }
+  },
+  {
+    "number": 14,
+    "sourceNumber": 4,
+    "src": "/images/fashion-wall/014.webp",
+    "original": "/images/IG%20portfolio/85726F4E-4CAC-4FBE-B96A-17F255385A81.jpg",
+    "sourceSet": "images/IG portfolio",
+    "layout": "contained",
+    "palette": {
+      "group": "rainbow",
+      "hue": 13,
+      "lightness": 0.492,
+      "saturation": 0.298
+    }
+  },
+  {
+    "number": 15,
+    "sourceNumber": 10,
+    "src": "/images/fashion-wall/015.webp",
+    "original": "/images/IG%20portfolio/CE94149A-D69F-474C-B591-1AEB8A7C7655.jpg",
+    "sourceSet": "images/IG portfolio",
+    "layout": "cover",
+    "palette": {
+      "group": "rainbow",
+      "hue": 17,
+      "lightness": 0.354,
+      "saturation": 0.298
+    }
+  },
+  {
+    "number": 16,
+    "sourceNumber": 20,
+    "src": "/images/fashion-wall/016.webp",
+    "original": "/images/IG%20portfolio/IMG_0841.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "cover",
+    "palette": {
+      "group": "rainbow",
+      "hue": 15,
+      "lightness": 0.437,
+      "saturation": 0.134
+    }
+  },
+  {
+    "number": 17,
+    "sourceNumber": 76,
+    "src": "/images/fashion-wall/017.webp",
+    "original": "/images/IG%20portfolio/IMG_2535.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "contained",
+    "palette": {
+      "group": "rainbow",
+      "hue": 0,
+      "lightness": 0.389,
+      "saturation": 0.014
+    }
+  },
+  {
+    "number": 18,
+    "sourceNumber": 85,
+    "src": "/images/fashion-wall/018.webp",
+    "original": "/images/IG%20portfolio/IMG_2932.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "cover",
+    "palette": {
+      "group": "rainbow",
+      "hue": 351,
+      "lightness": 0.536,
+      "saturation": 0.549
+    }
+  },
+  {
+    "number": 19,
+    "sourceNumber": 91,
+    "src": "/images/fashion-wall/019.webp",
+    "original": "/images/IG%20portfolio/IMG_2980.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "cover",
+    "palette": {
+      "group": "rainbow",
+      "hue": 8,
+      "lightness": 0.702,
+      "saturation": 0.402
+    }
+  },
+  {
+    "number": 20,
+    "sourceNumber": 93,
+    "src": "/images/fashion-wall/020.webp",
+    "original": "/images/IG%20portfolio/IMG_3240.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "cover",
+    "palette": {
+      "group": "rainbow",
+      "hue": 15,
+      "lightness": 0.407,
+      "saturation": 0.103
+    }
+  },
+  {
+    "number": 21,
+    "sourceNumber": 95,
+    "src": "/images/fashion-wall/021.webp",
+    "original": "/images/IG%20portfolio/IMG_3290.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "cover",
+    "palette": {
+      "group": "rainbow",
+      "hue": 337,
+      "lightness": 0.559,
+      "saturation": 0.492
+    }
+  },
+  {
+    "number": 22,
+    "sourceNumber": 104,
+    "src": "/images/fashion-wall/022.webp",
+    "original": "/images/IG%20portfolio/IMG_3976.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "cover",
+    "palette": {
+      "group": "rainbow",
+      "hue": 336,
+      "lightness": 0.732,
+      "saturation": 0.367
+    }
+  },
+  {
+    "number": 23,
+    "sourceNumber": 110,
+    "src": "/images/fashion-wall/023.webp",
+    "original": "/images/IG%20portfolio/IMG_4098.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "contained",
+    "palette": {
+      "group": "rainbow",
+      "hue": 352,
+      "lightness": 0.57,
+      "saturation": 0.352
+    }
+  },
+  {
+    "number": 24,
+    "sourceNumber": 112,
+    "src": "/images/fashion-wall/024.webp",
+    "original": "/images/IG%20portfolio/IMG_5920.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "cover",
+    "palette": {
+      "group": "rainbow",
+      "hue": 354,
+      "lightness": 0.638,
+      "saturation": 0.433
+    }
+  },
+  {
+    "number": 25,
+    "sourceNumber": 134,
+    "src": "/images/fashion-wall/025.webp",
+    "original": "/images/IG%20portfolio/IMG_7503.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "cover",
+    "palette": {
+      "group": "rainbow",
+      "hue": 3,
+      "lightness": 0.413,
+      "saturation": 0.675
+    }
+  },
+  {
+    "number": 26,
+    "sourceNumber": 136,
+    "src": "/images/fashion-wall/026.webp",
+    "original": "/images/IG%20portfolio/IMG_7539.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "cover",
+    "palette": {
+      "group": "rainbow",
+      "hue": 8,
+      "lightness": 0.658,
+      "saturation": 0.488
+    }
+  },
+  {
+    "number": 27,
+    "sourceNumber": 151,
+    "src": "/images/fashion-wall/027.webp",
+    "original": "/images/IG%20portfolio/IMG_8953.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "cover",
+    "palette": {
+      "group": "rainbow",
+      "hue": 13,
+      "lightness": 0.428,
+      "saturation": 0.764
+    }
+  },
+  {
+    "number": 28,
+    "sourceNumber": 316,
+    "src": "/images/fashion-wall/028.webp",
+    "original": "/images/IG%20portfolio/process-01.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "cover",
+    "palette": {
+      "group": "rainbow",
+      "hue": 9,
+      "lightness": 0.655,
+      "saturation": 0.6
+    }
+  },
+  {
+    "number": 29,
+    "sourceNumber": 148,
+    "src": "/images/fashion-wall/029.webp",
+    "original": "/images/IG%20portfolio/IMG_8944.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "cover",
+    "palette": {
+      "group": "rainbow",
+      "hue": 18,
+      "lightness": 0.448,
+      "saturation": 0.77
+    }
+  },
+  {
+    "number": 30,
+    "sourceNumber": 56,
+    "src": "/images/fashion-wall/030.webp",
+    "original": "/images/IG%20portfolio/IMG_2071.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "cover",
+    "palette": {
+      "group": "rainbow",
+      "hue": 19,
+      "lightness": 0.446,
+      "saturation": 0.485
+    }
+  },
+  {
+    "number": 31,
+    "sourceNumber": 75,
+    "src": "/images/fashion-wall/031.webp",
+    "original": "/images/IG%20portfolio/IMG_2374.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "cover",
+    "palette": {
+      "group": "rainbow",
+      "hue": 20,
+      "lightness": 0.428,
+      "saturation": 0.444
+    }
+  },
+  {
+    "number": 32,
+    "sourceNumber": 144,
+    "src": "/images/fashion-wall/032.webp",
+    "original": "/images/IG%20portfolio/IMG_8377.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "contained",
+    "palette": {
+      "group": "rainbow",
+      "hue": 21,
+      "lightness": 0.546,
+      "saturation": 0.147
+    }
+  },
+  {
+    "number": 33,
+    "sourceNumber": 44,
+    "src": "/images/fashion-wall/033.webp",
+    "original": "/images/IG%20portfolio/IMG_1793.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "cover",
+    "palette": {
+      "group": "rainbow",
+      "hue": 22,
+      "lightness": 0.636,
+      "saturation": 0.328
+    }
+  },
+  {
+    "number": 34,
+    "sourceNumber": 9,
+    "src": "/images/fashion-wall/034.webp",
+    "original": "/images/IG%20portfolio/C627613A-DAB7-41B8-8C1D-5384BEBBB0E3.jpg",
+    "sourceSet": "images/IG portfolio",
+    "layout": "cover",
+    "palette": {
+      "group": "rainbow",
+      "hue": 25,
+      "lightness": 0.611,
+      "saturation": 0.429
+    }
+  },
+  {
+    "number": 35,
+    "sourceNumber": 78,
+    "src": "/images/fashion-wall/035.webp",
+    "original": "/images/IG%20portfolio/IMG_2540.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "cover",
+    "palette": {
+      "group": "rainbow",
+      "hue": 26,
+      "lightness": 0.478,
+      "saturation": 0.241
+    }
+  },
+  {
+    "number": 36,
+    "sourceNumber": 80,
+    "src": "/images/fashion-wall/036.webp",
+    "original": "/images/IG%20portfolio/IMG_2542.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "cover",
+    "palette": {
+      "group": "rainbow",
+      "hue": 27,
+      "lightness": 0.644,
+      "saturation": 0.328
+    }
+  },
+  {
+    "number": 37,
+    "sourceNumber": 60,
+    "src": "/images/fashion-wall/037.webp",
+    "original": "/images/IG%20portfolio/IMG_2075.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "cover",
+    "palette": {
+      "group": "rainbow",
+      "hue": 27,
+      "lightness": 0.57,
+      "saturation": 0.463
+    }
+  },
+  {
+    "number": 38,
+    "sourceNumber": 58,
+    "src": "/images/fashion-wall/038.webp",
+    "original": "/images/IG%20portfolio/IMG_2073.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "contained",
+    "palette": {
+      "group": "rainbow",
+      "hue": 28,
+      "lightness": 0.514,
+      "saturation": 0.46
+    }
+  },
+  {
+    "number": 39,
+    "sourceNumber": 63,
+    "src": "/images/fashion-wall/039.webp",
+    "original": "/images/IG%20portfolio/IMG_2079.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "contained",
+    "palette": {
+      "group": "rainbow",
+      "hue": 29,
+      "lightness": 0.485,
+      "saturation": 0.37
+    }
+  },
+  {
+    "number": 40,
+    "sourceNumber": 19,
+    "src": "/images/fashion-wall/040.webp",
+    "original": "/images/IG%20portfolio/IMG_0788.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "contained",
+    "palette": {
+      "group": "rainbow",
+      "hue": 29,
+      "lightness": 0.686,
+      "saturation": 0.35
+    }
+  },
+  {
+    "number": 41,
+    "sourceNumber": 54,
+    "src": "/images/fashion-wall/041.webp",
+    "original": "/images/IG%20portfolio/IMG_2069.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "contained",
+    "palette": {
+      "group": "rainbow",
+      "hue": 30,
+      "lightness": 0.493,
+      "saturation": 0.441
+    }
+  },
+  {
+    "number": 42,
+    "sourceNumber": 59,
+    "src": "/images/fashion-wall/042.webp",
+    "original": "/images/IG%20portfolio/IMG_2074.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "cover",
+    "palette": {
+      "group": "rainbow",
+      "hue": 31,
+      "lightness": 0.375,
+      "saturation": 0.331
+    }
+  },
+  {
+    "number": 43,
+    "sourceNumber": 81,
+    "src": "/images/fashion-wall/043.webp",
+    "original": "/images/IG%20portfolio/IMG_2543.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "cover",
+    "palette": {
+      "group": "rainbow",
+      "hue": 32,
+      "lightness": 0.583,
+      "saturation": 0.249
+    }
+  },
+  {
+    "number": 44,
+    "sourceNumber": 7,
+    "src": "/images/fashion-wall/044.webp",
+    "original": "/images/IG%20portfolio/about-portrait.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "cover",
+    "palette": {
+      "group": "rainbow",
+      "hue": 32,
+      "lightness": 0.374,
+      "saturation": 0.332
+    }
+  },
+  {
+    "number": 45,
+    "sourceNumber": 79,
+    "src": "/images/fashion-wall/045.webp",
+    "original": "/images/IG%20portfolio/IMG_2541.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "cover",
+    "palette": {
+      "group": "rainbow",
+      "hue": 34,
+      "lightness": 0.549,
+      "saturation": 0.38
+    }
+  },
+  {
+    "number": 46,
+    "sourceNumber": 52,
+    "src": "/images/fashion-wall/046.webp",
+    "original": "/images/IG%20portfolio/IMG_2066.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "cover",
+    "palette": {
+      "group": "rainbow",
+      "hue": 34,
+      "lightness": 0.498,
+      "saturation": 0.337
+    }
+  },
+  {
+    "number": 47,
+    "sourceNumber": 71,
+    "src": "/images/fashion-wall/047.webp",
+    "original": "/images/IG%20portfolio/IMG_2087.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "cover",
+    "palette": {
+      "group": "rainbow",
+      "hue": 37,
+      "lightness": 0.662,
+      "saturation": 0.299
+    }
+  },
+  {
+    "number": 48,
+    "sourceNumber": 67,
+    "src": "/images/fashion-wall/048.webp",
+    "original": "/images/IG%20portfolio/IMG_2083.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "cover",
+    "palette": {
+      "group": "rainbow",
+      "hue": 37,
+      "lightness": 0.725,
+      "saturation": 0.368
+    }
+  },
+  {
+    "number": 49,
+    "sourceNumber": 70,
+    "src": "/images/fashion-wall/049.webp",
+    "original": "/images/IG%20portfolio/IMG_2086.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "cover",
+    "palette": {
+      "group": "rainbow",
+      "hue": 40,
+      "lightness": 0.529,
+      "saturation": 0.319
+    }
+  },
+  {
+    "number": 50,
+    "sourceNumber": 74,
+    "src": "/images/fashion-wall/050.webp",
+    "original": "/images/IG%20portfolio/IMG_2305.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "cover",
+    "palette": {
+      "group": "rainbow",
+      "hue": 40,
+      "lightness": 0.647,
+      "saturation": 0.27
+    }
+  },
+  {
+    "number": 51,
+    "sourceNumber": 145,
+    "src": "/images/fashion-wall/051.webp",
+    "original": "/images/IG%20portfolio/IMG_8426.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "cover",
+    "palette": {
+      "group": "rainbow",
+      "hue": 42,
+      "lightness": 0.608,
+      "saturation": 0.76
+    }
+  },
+  {
+    "number": 52,
+    "sourceNumber": 147,
+    "src": "/images/fashion-wall/052.webp",
+    "original": "/images/IG%20portfolio/IMG_8438.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "cover",
+    "palette": {
+      "group": "rainbow",
+      "hue": 43,
+      "lightness": 0.626,
+      "saturation": 0.768
+    }
+  },
+  {
+    "number": 53,
+    "sourceNumber": 131,
+    "src": "/images/fashion-wall/053.webp",
+    "original": "/images/IG%20portfolio/IMG_7487.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "contained",
+    "palette": {
+      "group": "rainbow",
+      "hue": 58,
+      "lightness": 0.548,
+      "saturation": 0.152
+    }
+  },
+  {
+    "number": 54,
+    "sourceNumber": 129,
+    "src": "/images/fashion-wall/054.webp",
+    "original": "/images/IG%20portfolio/IMG_7475.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "cover",
+    "palette": {
+      "group": "rainbow",
+      "hue": 108,
+      "lightness": 0.573,
+      "saturation": 0.406
+    }
+  },
+  {
+    "number": 55,
+    "sourceNumber": 13,
+    "src": "/images/fashion-wall/055.webp",
+    "original": "/images/IG%20portfolio/hero-cover.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "cover",
+    "palette": {
+      "group": "rainbow",
+      "hue": 142,
+      "lightness": 0.52,
+      "saturation": 0.317
+    }
+  },
+  {
+    "number": 56,
+    "sourceNumber": 33,
+    "src": "/images/fashion-wall/056.webp",
+    "original": "/images/IG%20portfolio/IMG_1332.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "cover",
+    "palette": {
+      "group": "rainbow",
+      "hue": 179,
+      "lightness": 0.556,
+      "saturation": 0.407
+    }
+  },
+  {
+    "number": 57,
+    "sourceNumber": 130,
+    "src": "/images/fashion-wall/057.webp",
+    "original": "/images/IG%20portfolio/IMG_7480.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "cover",
+    "palette": {
+      "group": "rainbow",
+      "hue": 186,
+      "lightness": 0.684,
+      "saturation": 0.414
+    }
+  },
+  {
+    "number": 58,
+    "sourceNumber": 11,
+    "src": "/images/fashion-wall/058.webp",
+    "original": "/images/IG%20portfolio/F43BC8FA-7678-44AF-A07A-B6DDE603C4B6.jpg",
+    "sourceSet": "images/IG portfolio",
+    "layout": "cover",
+    "palette": {
+      "group": "rainbow",
+      "hue": 213,
+      "lightness": 0.243,
+      "saturation": 0.402
+    }
+  },
+  {
+    "number": 59,
+    "sourceNumber": 123,
+    "src": "/images/fashion-wall/059.webp",
+    "original": "/images/IG%20portfolio/IMG_7410.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "cover",
+    "palette": {
+      "group": "rainbow",
+      "hue": 217,
+      "lightness": 0.8,
+      "saturation": 0.632
+    }
+  },
+  {
+    "number": 60,
+    "sourceNumber": 121,
+    "src": "/images/fashion-wall/060.webp",
+    "original": "/images/IG%20portfolio/IMG_7406.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "cover",
+    "palette": {
+      "group": "rainbow",
+      "hue": 218,
+      "lightness": 0.791,
+      "saturation": 0.621
+    }
+  },
+  {
+    "number": 61,
+    "sourceNumber": 122,
+    "src": "/images/fashion-wall/061.webp",
+    "original": "/images/IG%20portfolio/IMG_7408.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "cover",
+    "palette": {
+      "group": "rainbow",
+      "hue": 219,
+      "lightness": 0.685,
+      "saturation": 0.512
+    }
+  },
+  {
+    "number": 62,
+    "sourceNumber": 86,
+    "src": "/images/fashion-wall/062.webp",
+    "original": "/images/IG%20portfolio/IMG_2933.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "cover",
+    "palette": {
+      "group": "rainbow",
+      "hue": 221,
+      "lightness": 0.554,
+      "saturation": 0.505
+    }
+  },
+  {
+    "number": 63,
+    "sourceNumber": 164,
+    "src": "/images/fashion-wall/063.webp",
+    "original": "/images/IG%20portfolio/IMG_9309.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "cover",
+    "palette": {
+      "group": "rainbow",
+      "hue": 232,
+      "lightness": 0.517,
+      "saturation": 0.422
+    }
+  },
+  {
+    "number": 64,
+    "sourceNumber": 162,
+    "src": "/images/fashion-wall/064.webp",
+    "original": "/images/IG%20portfolio/IMG_9307.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "cover",
+    "palette": {
+      "group": "rainbow",
+      "hue": 260,
+      "lightness": 0.472,
+      "saturation": 0.417
+    }
+  },
+  {
+    "number": 65,
+    "sourceNumber": 89,
+    "src": "/images/fashion-wall/065.webp",
+    "original": "/images/IG%20portfolio/IMG_2938.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "contained",
+    "palette": {
+      "group": "rainbow",
+      "hue": 324,
+      "lightness": 0.444,
+      "saturation": 0.442
+    }
+  },
+  {
+    "number": 66,
+    "sourceNumber": 107,
+    "src": "/images/fashion-wall/066.webp",
+    "original": "/images/IG%20portfolio/IMG_4066.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "contained",
+    "palette": {
+      "group": "rainbow",
+      "hue": 316,
+      "lightness": 0.603,
+      "saturation": 0.158
+    }
+  },
+  {
+    "number": 67,
+    "sourceNumber": 99,
+    "src": "/images/fashion-wall/067.webp",
+    "original": "/images/IG%20portfolio/IMG_3560.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "contained",
+    "palette": {
+      "group": "black",
+      "hue": 212,
+      "lightness": 0.079,
+      "saturation": 0.495
+    }
+  },
+  {
+    "number": 68,
+    "sourceNumber": 15,
+    "src": "/images/fashion-wall/068.webp",
+    "original": "/images/IG%20portfolio/IMG_0183.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "cover",
+    "palette": {
+      "group": "black",
+      "hue": 345,
+      "lightness": 0.252,
+      "saturation": 0.289
+    }
+  },
+  {
+    "number": 69,
+    "sourceNumber": 25,
+    "src": "/images/fashion-wall/069.webp",
+    "original": "/images/IG%20portfolio/IMG_0868.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "cover",
+    "palette": {
+      "group": "black",
+      "hue": 15,
+      "lightness": 0.266,
+      "saturation": 0.097
+    }
+  },
+  {
+    "number": 70,
+    "sourceNumber": 87,
+    "src": "/images/fashion-wall/070.webp",
+    "original": "/images/IG%20portfolio/IMG_2936.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "cover",
+    "palette": {
+      "group": "black",
+      "hue": 324,
+      "lightness": 0.317,
+      "saturation": 0.234
+    }
+  },
+  {
+    "number": 71,
+    "sourceNumber": 6,
+    "src": "/images/fashion-wall/071.webp",
+    "original": "/images/IG%20portfolio/92754342-0A8C-4A0F-9171-995AA6D497EC.jpg",
+    "sourceSet": "images/IG portfolio",
+    "layout": "contained",
+    "palette": {
+      "group": "black",
+      "hue": 24,
+      "lightness": 0.351,
+      "saturation": 0.193
+    }
+  },
+  {
+    "number": 72,
+    "sourceNumber": 21,
+    "src": "/images/fashion-wall/072.webp",
+    "original": "/images/IG%20portfolio/IMG_0842.JPG",
+    "sourceSet": "images/IG portfolio",
+    "layout": "cover",
+    "palette": {
+      "group": "black",
+      "hue": 16,
+      "lightness": 0.386,
+      "saturation": 0.069
+    }
+  }
+]

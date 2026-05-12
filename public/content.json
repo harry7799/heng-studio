@@ -4,145 +4,68 @@
     "lighting": true
   },
   "site": {
-    "brand": "Harry Heng | 謝典恆 Photography Studio",
+    "brand": "Harry Heng Studio 謝典恆攝影",
     "worksArchiveStart": 2016
   },
   "assets": {
-    "heroCover": "/images/hero-cover.jpg"
+    "heroCover": "/images/optimized/hero-cover.webp"
   },
   "projects": [
     {
-      "id": "1",
-      "title": "專業時尚人像",
+      "id": "portrait-brand",
+      "title": "形象照｜把專業感拍得自然",
       "category": "Fashion",
       "imageUrl": "/images/projects/01.jpg",
-      "metadata": { "iso": "100", "aperture": "f/2.8", "shutter": "1/125", "date": "2024年" }
+      "metadata": { "iso": "100", "aperture": "f/2.8", "shutter": "1/160", "date": "Portrait" }
     },
     {
-      "id": "2",
-      "title": "形象攝影",
-      "category": "Fashion",
-      "imageUrl": "/images/projects/02.jpg",
-      "metadata": { "iso": "200", "aperture": "f/4.0", "shutter": "1/200", "date": "2024年" }
-    },
-    {
-      "id": "3",
-      "title": "時尚寫真",
-      "category": "Fashion",
-      "imageUrl": "/images/projects/03.jpg",
-      "metadata": { "iso": "400", "aperture": "f/2.0", "shutter": "1/160", "date": "2024年" }
-    },
-    {
-      "id": "4",
-      "title": "頂樓的自習課",
-      "category": "Dance/Theater",
-      "imageUrl": "/images/projects/04.jpg",
-      "metadata": { "iso": "800", "aperture": "f/2.8", "shutter": "1/250", "date": "2021年" }
-    },
-    {
-      "id": "5",
-      "title": "層中隙",
-      "category": "Dance/Theater",
-      "imageUrl": "/images/projects/05.jpg",
-      "metadata": { "iso": "1600", "aperture": "f/2.0", "shutter": "1/500", "date": "2019年" }
-    },
-    {
-      "id": "6",
-      "title": "牡丹亭｜拾翠坊崑劇團",
-      "category": "Kunqu Opera",
-      "imageUrl": "/images/projects/06.jpg",
-      "metadata": { "iso": "3200", "aperture": "f/2.8", "shutter": "1/320", "date": "2023年" }
-    },
-    {
-      "id": "7",
-      "title": "孤獨國｜紅樓詩社",
-      "category": "Dance/Theater",
-      "imageUrl": "/images/projects/07.jpg",
-      "metadata": { "iso": "1250", "aperture": "f/2.0", "shutter": "1/400", "date": "2019年" }
-    },
-    {
-      "id": "8",
-      "title": "斷代｜公視文學劇場",
-      "category": "Dance/Theater",
-      "imageUrl": "/images/projects/08.jpg",
-      "metadata": { "iso": "1000", "aperture": "f/2.8", "shutter": "1/200", "date": "2017年" }
-    },
-    {
-      "id": "9",
-      "title": "第25小時｜臺北藝穗節",
-      "category": "Dance/Theater",
-      "imageUrl": "/images/projects/09.jpg",
-      "metadata": { "iso": "2000", "aperture": "f/2.0", "shutter": "1/250", "date": "2018年" }
-    },
-    {
-      "id": "10",
-      "title": "歡迎光臨自助吧",
-      "category": "Dance/Theater",
-      "imageUrl": "/images/projects/10.jpg",
-      "metadata": { "iso": "1600", "aperture": "f/2.8", "shutter": "1/320", "date": "2020年" }
-    },
-    {
-      "id": "11",
-      "title": "長生殿｜拾翠坊崑劇團",
-      "category": "Kunqu Opera",
-      "imageUrl": "/images/kunqu/01.jpg",
-      "metadata": { "iso": "2500", "aperture": "f/2.8", "shutter": "1/250", "date": "2024年" }
-    },
-    {
-      "id": "12",
-      "title": "玉簪記｜崑曲選段",
-      "category": "Kunqu Opera",
-      "imageUrl": "/images/kunqu/02.jpg",
-      "metadata": { "iso": "3200", "aperture": "f/2.0", "shutter": "1/320", "date": "2023年" }
-    },
-    {
-      "id": "13",
-      "title": "西廂記｜崑曲演出",
-      "category": "Kunqu Opera",
-      "imageUrl": "/images/kunqu/03.jpg",
-      "metadata": { "iso": "2000", "aperture": "f/2.8", "shutter": "1/200", "date": "2022年" }
-    },
-    {
-      "id": "14",
-      "title": "幸福時刻｜婚禮紀錄",
+      "id": "wedding-vows",
+      "title": "婚紗攝影｜城市裡的安靜承諾",
       "category": "Wedding",
       "imageUrl": "/images/wedding/01.jpg",
-      "metadata": { "iso": "400", "aperture": "f/2.8", "shutter": "1/200", "date": "2024年" }
+      "metadata": { "iso": "200", "aperture": "f/2.8", "shutter": "1/250", "date": "Wedding" }
     },
     {
-      "id": "15",
-      "title": "永恆誓言｜戶外婚禮",
+      "id": "wedding-day",
+      "title": "婚禮紀錄｜留下那天真正的情緒",
       "category": "Wedding",
-      "imageUrl": "/images/wedding/02.jpg",
-      "metadata": { "iso": "200", "aperture": "f/4.0", "shutter": "1/250", "date": "2024年" }
+      "imageUrl": "/images/wedding/089.jpg",
+      "metadata": { "iso": "400", "aperture": "f/2.0", "shutter": "1/200", "date": "Wedding Day" }
     },
     {
-      "id": "16",
-      "title": "浪漫序曲｜婚紗攝影",
-      "category": "Wedding",
-      "imageUrl": "/images/wedding/03.jpg",
-      "metadata": { "iso": "100", "aperture": "f/2.0", "shutter": "1/160", "date": "2023年" }
+      "id": "kunqu-stage",
+      "title": "崑曲藝術｜身段、眼神與舞台光",
+      "category": "Kunqu Opera",
+      "imageUrl": "/images/kunqu/01.jpg",
+      "metadata": { "iso": "1600", "aperture": "f/2.8", "shutter": "1/320", "date": "Kunqu" }
     },
     {
-      "id": "17",
-      "title": "姊妹淘｜閨蜜寫真",
-      "category": "Bestie",
+      "id": "dance-theater",
+      "title": "劇場紀錄｜凝住動作最有力量的一秒",
+      "category": "Dance/Theater",
+      "imageUrl": "/images/projects/05.jpg",
+      "metadata": { "iso": "1250", "aperture": "f/2.0", "shutter": "1/400", "date": "Theater" }
+    },
+    {
+      "id": "bestie",
+      "title": "閨密寫真｜一起笑得很像自己的樣子",
+      "category": "Fashion",
       "imageUrl": "/images/intimacy/bestie/01.jpg",
-      "metadata": { "iso": "200", "aperture": "f/2.8", "shutter": "1/160", "date": "2024年" }
+      "metadata": { "iso": "200", "aperture": "f/2.8", "shutter": "1/160", "date": "Bestie" }
     },
     {
-      "id": "18",
-      "title": "幸福一家｜全家福",
-      "category": "Family",
+      "id": "family",
+      "title": "全家福｜把日常的溫度拍成紀念",
+      "category": "Fashion",
       "imageUrl": "/images/intimacy/family/02.jpg",
-      "metadata": { "iso": "400", "aperture": "f/4.0", "shutter": "1/125", "date": "2024年" }
+      "metadata": { "iso": "400", "aperture": "f/4.0", "shutter": "1/125", "date": "Family" }
     },
     {
-      "id": "19",
-      "title": "毛孩日記｜寵物寫真",
-      "category": "Pet",
-      "imageUrl": "/images/intimacy/pet/03.jpg",
-      "metadata": { "iso": "800", "aperture": "f/2.8", "shutter": "1/250", "date": "2024年" }
+      "id": "styling-editorial",
+      "title": "造型影像｜為品牌與個人建立視覺印象",
+      "category": "Styling",
+      "imageUrl": "/images/projects/10.jpg",
+      "metadata": { "iso": "100", "aperture": "f/2.8", "shutter": "1/200", "date": "Styling" }
     }
   ]
 }

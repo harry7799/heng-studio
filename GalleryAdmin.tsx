@@ -370,6 +370,9 @@ export default function GalleryAdmin() {
             <a href="#/page-manager" className="px-3 py-1.5 rounded-full border border-emerald-500/30 text-emerald-300 hover:border-emerald-400 font-mono text-[10px] uppercase tracking-widest flex items-center gap-1">
               <Eye size={12} /> Pages
             </a>
+            <a href="#/fashion-wall-admin" className="px-3 py-1.5 rounded-full border border-sky-500/30 text-sky-300 hover:border-sky-400 font-mono text-[10px] uppercase tracking-widest flex items-center gap-1">
+              <LayoutGrid size={12} /> Fashion Wall
+            </a>
             <button onClick={handleReset} disabled={!hasChanges} className="px-3 py-1.5 rounded-full border border-white/15 hover:border-white/40 disabled:opacity-40 font-mono text-[10px] uppercase tracking-widest flex items-center gap-1">
               <RotateCcw size={12} /> Reset
             </button>

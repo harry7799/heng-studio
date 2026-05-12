@@ -389,6 +389,10 @@ export default function PageManager() {
             className="ml-auto px-3 py-2 rounded-lg font-mono text-[10px] uppercase tracking-widest text-white/40 hover:text-white/70 hover:bg-white/5 transition-all flex items-center gap-1.5">
             <Layout size={12} /> Gallery Manager
           </a>
+          <a href="#/fashion-wall-admin"
+            className="px-3 py-2 rounded-lg font-mono text-[10px] uppercase tracking-widest text-white/40 hover:text-white/70 hover:bg-white/5 transition-all flex items-center gap-1.5">
+            <ImageIcon size={12} /> Fashion Wall
+          </a>
         </div>
 
         {/* Toolbar */}

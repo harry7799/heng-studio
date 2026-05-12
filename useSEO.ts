@@ -46,52 +46,44 @@ function setJsonLd(id: string, data: Record<string, unknown>) {
 }
 
 function removeJsonLd(id: string) {
-  const el = document.querySelector(`script[data-seo-id="${id}"]`);
-  if (el) el.remove();
+  document.querySelector(`script[data-seo-id="${id}"]`)?.remove();
 }
 
 export function useSEO(config: SEOConfig) {
+  const jsonLd = config.jsonLd ? JSON.stringify(config.jsonLd) : '';
+
   useEffect(() => {
     const originalTitle = document.title;
-
-    // Title
-    document.title = config.title;
-
-    // Meta description
-    setMeta('description', config.description);
-
-    // Keywords
-    if (config.keywords) {
-      setMeta('keywords', config.keywords);
-    }
-
-    // Canonical
     const canonical = config.canonical || `${BASE_URL}/`;
+    const image = config.ogImage || DEFAULT_IMAGE;
+
+    document.title = config.title;
+    setMeta('description', config.description);
+    if (config.keywords) setMeta('keywords', config.keywords);
     setCanonical(canonical);
 
-    // Open Graph
     setMeta('og:title', config.title, 'property');
     setMeta('og:description', config.description, 'property');
     setMeta('og:url', canonical, 'property');
     setMeta('og:type', config.ogType || 'website', 'property');
-    setMeta('og:image', config.ogImage || DEFAULT_IMAGE, 'property');
+    setMeta('og:image', image, 'property');
     setMeta('og:site_name', SITE_NAME, 'property');
     setMeta('og:locale', 'zh_TW', 'property');
 
-    // Twitter Card
     setMeta('twitter:card', 'summary_large_image');
     setMeta('twitter:title', config.title);
     setMeta('twitter:description', config.description);
-    setMeta('twitter:image', config.ogImage || DEFAULT_IMAGE);
+    setMeta('twitter:image', image);
 
-    // JSON-LD
     if (config.jsonLd) {
       setJsonLd('page-schema', config.jsonLd);
+    } else {
+      removeJsonLd('page-schema');
     }
 
     return () => {
       document.title = originalTitle;
       removeJsonLd('page-schema');
     };
-  }, [config.title, config.description]);
+  }, [config.title, config.description, config.keywords, config.canonical, config.ogType, config.ogImage, jsonLd]);
 }

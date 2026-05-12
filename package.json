@@ -8,10 +8,11 @@
     "dev:web": "vite",
     "dev:api": "tsx watch server/index.ts",
     "gen:manifests": "node scripts/generate-public-manifests.mjs",
+    "gen:media": "node scripts/generate-optimized-media.mjs",
     "photos:finish": "node scripts/finish-downloaded-photos.mjs",
     "photos:normalize-map": "node scripts/normalize-rename-map-after-shift.mjs",
     "photos:ig-to-gallery": "node scripts/ig-portfolio-to-gallery.mjs",
-    "build": "npm run gen:manifests && vite build",
+    "build": "npm run gen:manifests && npm run gen:media && vite build && node scripts/generate-route-html.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
